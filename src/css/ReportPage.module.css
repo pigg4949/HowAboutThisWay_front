@@ -148,15 +148,17 @@ body {
 /* Report Item (제보 개별 아이템) */
 /* -------------------------------------- */
 .reportItem {
-  display: flex; /* Flexbox 사용 */
-  align-items: flex-start; /* 아이템 상단 정렬 */
+  display: flex; /* Flexbox로 내부 요소를 정렬합니다. */
+  align-items: flex-start; /* 세로 축(cross axis)의 시작 부분에 요소를 정렬합니다. */
+  justify-content: space-between; /* 메인 콘텐츠와 버튼을 양 끝으로 밀어냅니다. */
   background: #fff;
-  border-radius: 10px; /* 더 둥근 모서리 */
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.08); /* 더 확실한 그림자 */
-  margin-bottom: 15px; /* 아이템 간 간격 */
-  padding: 15px; /* 내부 패딩 통일 */
-  position: relative; /* statusIndicator 위치 지정을 위해 */
-  overflow: hidden; /* 내부 요소가 넘치지 않도록 */
+  border-radius: 0.625rem;
+  box-shadow: 0 0.25rem 0.5rem rgba(0, 0, 0, 0.08);
+  margin-bottom: 1rem;
+  padding: 0.9375rem; /* 전체 아이템의 내부 여백 */
+  position: relative;
+  overflow: hidden; /* 아이템 내부의 넘치는 콘텐츠를 숨깁니다. */
+  /* gap 속성은 justify-content: space-between과 함께 사용하지 않습니다. */
 }
 
 /* Status Indicator */
@@ -167,7 +169,8 @@ body {
   flex-shrink: 0;
   position: absolute; /* 부모 reportItem에 상대적으로 위치 */
   left: 10px; /* 좌측 패딩 안쪽으로 */
-  top: 15px; /* 상단에서부터의 위치 */
+  top: 20px; /* 상단에서부터의 위치 */
+  padding: 2px;
   /* transform: translateY(-50%); 를 제거하여 itemMeta 옆에 고정된 위치로 조정 */
 }
 .statusPending {
@@ -182,11 +185,15 @@ body {
 
 /* Item Main Content (상태 표시기 옆, 버튼 제외한 모든 내용) */
 .itemMainContent {
-  flex-grow: 1; /* 남은 공간 모두 차지 */
+  flex-grow: 1; /* 사용 가능한 공간을 최대한 차지합니다. */
+  flex-shrink: 1; /* 필요시 줄어들 수 있도록 허용합니다. */
+  flex-basis: auto; /* 콘텐츠 크기에 따라 초기 크기를 결정하고, 이후 늘거나 줄어듭니다. */
   display: flex;
-  flex-direction: column;
-  gap: 8px; /* 내부 요소들 간의 간격 */
-  margin-left: 20px; /* Status Indicator와의 간격 확보 */
+  flex-direction: column; /* 내부 요소들을 세로로 정렬합니다. */
+  gap: 0.5rem; /* 내부 요소들 간의 세로 간격 */
+  margin-left: 1.25rem; /* Status Indicator와의 간격을 확보합니다. */
+  min-width: 0; /* Flex 아이템이 최소한 0px까지 줄어들 수 있도록 허용합니다. */
+  margin-right: 0.625rem; /* 버튼과의 간격을 확보합니다. */
 }
 
 /* itemType 및 itemDate 컨테이너 */
@@ -199,7 +206,7 @@ body {
 
 /* itemType (좌측 정렬) */
 .itemType {
-  font-size: 1.1rem; /* 1.2rem 대신 1.1rem으로 조정 */
+  font-size: 1rem; /* 1.2rem 대신 1.1rem으로 조정 */
   font-weight: 600;
   color: #333;
   white-space: nowrap;
@@ -218,44 +225,41 @@ body {
 
 /* itemImage (작은 썸네일 크기) */
 .itemImage {
-  .itemImage {
-    width: 100%; /* 부모 컨테이너 너비에 맞춤 */
-    max-width: 200px; /* 최대 너비 설정 (너무 커지지 않도록, 필요시 조정) */
-    height: auto; /* 높이를 자동으로 조절하여 비율 유지 */
-    max-height: 150px; /* 최대 높이 설정 (세로로 너무 길어지지 않도록, 필요시 조정) */
-    object-fit: contain; /* 이미지가 잘리지 않고 전체가 보이도록 비율 유지 */
-    border-radius: 4px; /* 둥근 모서리 */
-    display: block; /* 블록 요소로 설정 */
-    margin-top: 8px; /* 상단 여백 */
-    border: 1px solid #eee; /* 테두리 */
-  }
+  width: 100%; /* 부모 컨테이너 너비에 맞춤 */
+  height: auto; /* 높이를 자동으로 조절하여 비율 유지 */
+  max-height: 55vh; /* 최대 높이 전체의 50%로 설정 */
+  object-fit: contain; /* 이미지가 잘리지 않고 전체가 보이도록 비율 유지 */
+  display: block; /* 블록 요소로 설정 */
+  margin-top: 8px; /* 상단 여백 */
+  border: 1px solid #eee; /* 테두리 */
 }
 
 /* itemComment (가장 아래에 좌측 정렬) */
 .itemComment {
-  font-size: 1.1rem; /* 1.2rem 대신 1.1rem으로 조정 */
+  font-size: 1rem;
   color: #333;
   text-align: left;
   width: 100%;
   margin-top: auto;
   line-height: 1.5;
   white-space: pre-wrap; /* 줄바꿈 유지 */
+  flex-grow: 1;
+  word-break: break-word; /* 긴 단어가 경계를 넘을 때 줄바꿈합니다. */
 }
 
 /* Action Buttons (승인/거부) */
 .actionBtns {
   display: flex;
-  flex-direction: column;
-  gap: 10px; /* 버튼 간격 키움 */
-  justify-content: center;
-  align-self: center;
-  margin-left: 20px; /* itemMainContent와 간격 */
+  flex-direction: column; /* 버튼들을 세로로 정렬합니다. */
+  gap: 1.5rem; /* 버튼들 간의 세로 간격 */
+  justify-content: center; /* 세로 중앙에 정렬합니다. */
+  align-self: center; /* .reportItem 내에서 버튼 묶음을 세로 중앙에 정렬합니다. */
   flex-shrink: 0;
 }
 
 .approveButton,
 .rejectButton {
-  padding: 14px 22px; /* 버튼 크기 더 키움 */
+  padding: 0.5rem 1.5rem; /* 버튼 크기 더 키움 */
   border: none;
   border-radius: 10px; /* 둥근 모서리 */
   font-size: 1.1rem; /* 폰트 크기 조정 */
@@ -263,7 +267,7 @@ body {
   cursor: pointer;
   transition: background-color 0.2s ease, transform 0.1s ease,
     box-shadow 0.2s ease;
-  min-width: 90px; /* 최소 너비 지정 */
+  /*min-width: 70px; 최소 너비 지정 */
   text-align: center;
   box-shadow: 0 3px 6px rgba(0, 0, 0, 0.15); /* 더 입체적인 그림자 */
 }
@@ -310,7 +314,7 @@ body {
 }
 
 .userId {
-  font-size: 0.85rem; /* 0.8rem 대신 약간 키움 */
+  font-size: 0.85rem;
   color: #666;
   margin-top: 5px; /* 간격 확보 */
 }
@@ -421,6 +425,19 @@ body {
   border-radius: 10px;
   margin: 15px;
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+}
+
+.imageErrorMessage {
+  font-size: 0.8rem; /* 텍스트 크기 조정 */
+  color: #dc3545; /* 빨간색으로 에러 강조 */
+  text-align: center;
+  padding: 0.5rem;
+  display: flex; /* 텍스트가 중앙에 오도록 flex 사용 */
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  height: 100%;
+  word-break: keep-all; /* 단어가 잘리지 않도록 */
 }
 
 /* -------------------------------------- */

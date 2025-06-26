@@ -8,7 +8,7 @@ import { getInquiry, replyInquiry } from "../api/inquiry";
 
 export default function ReportPage() {
   const [showReportModal, setShowReportModal] = useState(false);
-  const [items, setItems] = useState([]);
+  const [items, setItems] = useState([]); // 이 변수는 현재 사용되지 않는 것 같습니다.
   const [inquiryItems, setInquiryItems] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -17,26 +17,20 @@ export default function ReportPage() {
   const token = useMemo(() => localStorage.getItem("token"));
   const [activeTab, setActiveTab] = useState("report"); // "report" or "inquiry"
   const [reportItems, setReportItems] = useState([]);
-  /*const [inquiryItems] = useState([
-    {
-      idx: 1,
-      status: "PENDING",
-      title: "지도에서 제보하기 버튼이 안보여요",
-      date: "2025-05-30",
-    },
-    {
-      idx: 2,
-      status: "APPROVED",
-      title: "지도 마커에는 없는 장소가 있어요",
-      date: "2025-03-21",
-    },
-    { idx: 3, status: "rejected", title: "어디 사세요?", date: "2025-03-03" },
-  ]);*/
   const navigate = useNavigate();
 
-  const handleLogout = async () => {
-    localStorage.removeItem("token");
-    navigate("/login");
+  // 이미지 로딩 상태를 위한 새로운 State (각 이미지마다 관리)
+  const [imageLoadStatus, setImageLoadStatus] = useState({});
+
+  // 이미지 로드 완료 핸들러
+  const handleImageLoad = (idx) => {
+    setImageLoadStatus((prev) => ({ ...prev, [idx]: true }));
+  };
+
+  // 이미지 로드 실패 핸들러
+  const handleImageError = (e, idx) => {
+    setImageLoadStatus((prev) => ({ ...prev, [idx]: "error" }));
+    console.error(`이미지 로드 실패 (idx: ${idx}):`, e.target.src);
   };
 
   // 제보 목록 불러오기
@@ -46,15 +40,13 @@ export default function ReportPage() {
       navigate("/login");
       return;
     }
-
+    console.log("제보 목록 로딩 시작."); // 추가
     try {
       getReports(token)
         .then((res) => {
-          // console.log(res); // 원본 데이터 확인용
-          // // 1. type을 문자열로 변환하는 로직
+          console.log("getReports API 응답 데이터:", res);
           const processedData = res.map((item) => {
-            let typeString = ""; // 변환된 문자열을 담을 변수
-            // item.type 값에 따라 문자열을 할당
+            let typeString = "";
             switch (item.type) {
               case 5:
                 typeString = "단차 큼";
@@ -65,22 +57,26 @@ export default function ReportPage() {
               case 7:
                 typeString = "기타";
                 break;
-              default: // 혹시 모를 다른 값에 대한 처리
-                typeString = item.type; // 원본 유지
+              default:
+                typeString = item.type;
                 break;
             }
-            // 2. 기존 item의 모든 속성을 복사하고, type 속성만 새로운 문자열로 덮어쓰기
             return {
-              ...item, // '...'는 item의 모든 기존 속성(idx, comment 등)을 그대로 가져옵니다.
-              type: typeString, // type 값만 새로운 문자열로 교체합니다.
+              ...item,
+              type: typeString,
             };
-          }); // console.log(processedData); // 변환 후 데이터 확인용
-          // 3. 변환된 데이터를 state에 저장
+          });
           setReportItems(Array.isArray(processedData) ? processedData : []);
+          console.log(
+            "처리된 reportItems:",
+            Array.isArray(processedData) ? processedData : []
+          ); // 추가
+          setImageLoadStatus({}); // 새 목록 로드 시 이미지 로딩 상태 초기화
         })
         .catch((err) => {
           console.error("제보 목록 조회 실패:", err);
           setReportItems([]);
+          setImageLoadStatus({}); // 에러 시에도 상태 초기화
           if (err.response && err.response.status === 401) {
             alert("인증 실패. 다시 로그인해주세요.");
             localStorage.removeItem("token");
@@ -97,7 +93,6 @@ export default function ReportPage() {
   }, [token, navigate]);
 
   // 문의 목록 불러오기
-  // useEffect to fetch inquiries when the component mounts or activeTab/token changes
   useEffect(() => {
     const fetchInquiries = async () => {
       if (activeTab === "inquiry") {
@@ -117,12 +112,16 @@ export default function ReportPage() {
     };
 
     fetchInquiries();
-  }, [activeTab, token]); // Re-run when activeTab or token changes
+  }, [activeTab, token]);
+
+  const handleLogout = async () => {
+    localStorage.removeItem("token");
+    navigate("/login");
+  };
 
   const handleReplyClick = (idx) => {
     setReplyingInquiryId(idx);
     const inquiryToReply = inquiryItems.find((item) => item.idx === idx);
-    // Pre-fill reply text if there's an existing admin response
     setReplyText(inquiryToReply?.adminResponses || "");
   };
 
@@ -137,11 +136,10 @@ export default function ReportPage() {
       alert("답변이 성공적으로 등록되었습니다.");
       setReplyingInquiryId(null);
       setReplyText("");
-      // Re-fetch inquiries to update the list and status
       const updatedData = await getInquiry(token);
       const formattedUpdatedData = updatedData.map((item) => ({
         ...item,
-        status: item.adminResponses ? "APPROVED" : "PENDING", // Re-apply status logic
+        status: item.adminResponses ? "APPROVED" : "PENDING",
         date: new Date(item.createdAt).toLocaleDateString("ko-KR"),
       }));
       setInquiryItems(formattedUpdatedData);
@@ -156,7 +154,6 @@ export default function ReportPage() {
     setReplyText("");
   };
 
-  // 상태 변경 핸들러
   const handleStatusChange = async (idx, status) => {
     if (!token) {
       alert("로그인이 필요합니다.");
@@ -164,8 +161,6 @@ export default function ReportPage() {
       return;
     }
     try {
-      // Pass the token to the updateReportStatus function
-      console.log(idx, status);
       await updateReportStatus(idx, status, token);
       setReportItems((prev) =>
         prev.map((item) => (item.idx === idx ? { ...item, status } : item))
@@ -235,20 +230,34 @@ export default function ReportPage() {
               {/* Item Main Content - 상태 표시기 옆, 버튼 제외한 모든 내용 */}
               <div className={styles.itemMainContent}>
                 <div className={styles.itemMeta}>
-                  {" "}
-                  {/* itemType, itemDate 컨테이너 */}
                   <span className={styles.itemType}>{item.type}</span>
                   <span className={styles.itemDate}>{item.createdAt}</span>
                 </div>
+
+                {/* 이미지: imageWrapper로 감싸서 로딩 상태 제어 및 깜빡임 방지 */}
                 {item.imageUrl && (
-                  <img
-                    src={`http://localhost:8080${item.imageUrl}`}
-                    onError={(e) => (e.target.src = "/default.png")}
-                    alt="신고 이미지"
-                    className={styles.itemImage}
-                  />
+                  <div
+                    className={`${styles.imageWrapper} ${
+                      imageLoadStatus[item.idx] ? styles.imageLoaded : ""
+                    }`}
+                  >
+                    {/* 이미지 로드 상태에 따라 <img> 또는 텍스트 표시 */}
+                    {imageLoadStatus[item.idx] === "error" ? (
+                      <span className={styles.imageErrorMessage}>
+                        이미지를 로드할 수 없습니다.
+                      </span>
+                    ) : (
+                      <img
+                        src={`http://localhost:8080${item.imageUrl}`}
+                        onLoad={() => handleImageLoad(item.idx)}
+                        onError={(e) => handleImageError(e, item.idx)}
+                        alt="신고 이미지"
+                        className={styles.itemImage}
+                      />
+                    )}
+                  </div>
                 )}
-                {/* item.comment (itemTitle 대신 itemComment로 클래스명 변경) */}
+
                 <span className={styles.itemComment}>{item.comment}</span>
               </div>
 
@@ -292,8 +301,6 @@ export default function ReportPage() {
           inquiryItems.map((item) => (
             <div key={item.idx} className={styles.reportItem}>
               <div className={styles.itemContent}>
-                {" "}
-                {/* itemContent는 문의 내역에만 사용 */}
                 <span className={styles.itemTitle}>{item.content}</span>{" "}
                 <span className={styles.itemDate}>{item.createdAt}</span>
                 <span className={styles.userId}>문의자: {item.userId}</span>
