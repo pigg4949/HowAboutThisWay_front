@@ -1,0 +1,97 @@
+.mainContent {
+  width: 100%;
+  padding: 24px;
+  box-sizing: border-box;
+  overflow-y: auto;
+  flex-grow: 1;
+  background: url("/images/background.jpg") no-repeat center top/cover;
+  background-size: cover;
+}
+
+.mypageHeader {
+  width: 100%;
+  position: relative;
+  height: 56px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 24px;
+}
+.pageTitle {
+  font-size: 20px;
+  font-weight: bold;
+  margin: 0;
+}
+.backButton {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  left: 16px;
+  padding: 8px;
+  font-size: 20px;
+  color: #222;
+  text-decoration: none;
+}
+
+.formGroup {
+  margin-bottom: 16px;
+}
+.formGroup label {
+  display: block;
+  margin-bottom: 6px;
+  font-size: 14px;
+  font-weight: bold;
+  color: #333;
+}
+.formGroup input,
+.formGroup textarea {
+  width: 100%;
+  padding: 10px;
+  border: none;
+  border-radius: 22px;
+  background-color: #fff;
+  font-size: 14px;
+  box-sizing: border-box;
+}
+.formGroup input[readonly] {
+  background-color: #f7f7f7;
+  color: #666;
+}
+
+.btnMain {
+  display: block;
+  width: 100%;
+  margin: 20px 0;
+  padding: 12px;
+  font-size: 16px;
+  background-color: var(--primaryColor);
+  color: var(--textColor);
+  border: none;
+  border-radius: 24px;
+
+  cursor: pointer;
+}
+.btnSub {
+  display: block;
+  width: 100%;
+  margin: 10px 0;
+  padding: 12px;
+  font-size: 15px;
+  background-color: var(--primaryColor);
+  color: var(--textColor);
+  border: none;
+  border-radius: 24px;
+  cursor: pointer;
+}
+.btnDelete {
+  display: block;
+  width: 100%;
+  margin: 10px 0;
+  padding: 12px;
+  font-size: 15px;
+  background-color: #dcdcdc;
+  color: #000;
+  border: none;
+  border-radius: 24px;
+  cursor: pointer;
+}
