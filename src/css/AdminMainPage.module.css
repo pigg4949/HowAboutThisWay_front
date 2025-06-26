@@ -1,0 +1,57 @@
+.container {
+  width: 100%;
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+  padding: 24px;
+  box-sizing: border-box;
+}
+
+.header {
+  font-size: 24px;
+  font-weight: bold;
+  margin-bottom: 24px;
+}
+
+.sectionGroup {
+  margin-bottom: 24px;
+}
+
+.sectionTitle {
+  font-size: 18px;
+  font-weight: bold;
+  margin-bottom: 16px;
+}
+
+.reportList,
+.userList {
+  list-style: none;
+  padding: 0;
+}
+
+.reportCard,
+.userCard {
+  background: #fff;
+  padding: 16px;
+  border-radius: 8px;
+  margin-bottom: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.reportLink {
+  text-decoration: none;
+  color: #333;
+}
+
+.adminNav {
+  margin-top: auto;
+  padding-top: 16px;
+  border-top: 1px solid #eee;
+  display: flex;
+  gap: 16px;
+}
+
+.navLink {
+  text-decoration: none;
+  color: #007bff;
+}
