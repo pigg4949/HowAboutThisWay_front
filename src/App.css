@@ -1,6 +1,21 @@
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+/* 최상위 HTML 및 Body에서 가로 스크롤 방지 */
+html,
+body {
+  overflow-x: hidden;
+}
+
 #root {
-  max-width: 1280px;
+  width: 100vw;
+  height: 100vh;
   margin: 0 auto;
+  display: flex;
+  flex-direction: column;
   padding: 2rem;
   text-align: center;
 }

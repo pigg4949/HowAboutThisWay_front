@@ -1,35 +1,30 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import React from "react";
+import { Routes, Route } from "react-router-dom";
+import LoginPage from "./components/LoginPage";
+import SignupPage from "./components/SignupPage";
+import BookmarkPage from "./components/BookmarkPage";
+import MainPage from "./components/MainPage";
+import FindInfoPage from "./components/FindInfoPage";
+import MyPage from "./components/MyPage";
+import ReportPage from "./components/ReportPage";
+import MapPage from "./components/MapPage";
+import AdminMainPage from "./components/AdminMainPage"
+import KakaoCallback from "./components/KakaoCallback";
 
-function App() {
-  const [count, setCount] = useState(0)
-
+export default function App() {
   return (
-    <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.jsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
-  )
+    <Routes>
+      <Route path="/" element={<LoginPage />} />
+      <Route path="/login" element={<LoginPage />} />
+      <Route path="/signup" element={<SignupPage />} />
+      <Route path="/bookmark" element={<BookmarkPage />} />
+      <Route path="/main" element={<MainPage />} />
+      <Route path="/admin" element={<AdminMainPage />} />
+      <Route path="/map" element={<MapPage />} />
+      <Route path="/findinfo" element={<FindInfoPage />} />
+      <Route path="/mypage" element={<MyPage />} />
+      <Route path="/report" element={<ReportPage />} />
+      <Route path="/kakao-callback" element={<KakaoCallback />} />
+    </Routes>
+  );
 }
-
-export default App
