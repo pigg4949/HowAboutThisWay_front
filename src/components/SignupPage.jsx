@@ -283,7 +283,7 @@ const startTimer = () => {
           </div>
 
           {/* 인증번호 입력 */}
-          <div className={styles.inputWithButton}>
+          <div className={styles.inputWithButton}>git commit
             <input
               id="code"
               type="text"
