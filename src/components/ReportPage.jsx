@@ -71,7 +71,13 @@ export default function ReportPage() {
     <div className={styles.pageWrapper}>
       {/* 1) 헤더 바 */}
       <header className={styles.headerBar}>
-        <span className={styles.headerLogo}>logo</span>
+        <span className={styles.headerLogo}>
+          <img
+            src="/images/HATWlogo.png"
+            alt="HATW 로고"
+            style={{ height: 32, width: "auto", display: "block" }}
+          />
+        </span>
         <span className={styles.headerTitle}>제보관리</span>
         <span className={styles.headerRight}></span>
       </header>

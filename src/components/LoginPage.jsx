@@ -52,7 +52,19 @@ export default function LoginPage() {
   return (
     <div className={styles.pageWrapper}>
       {/* 1) 스플래시 로고 */}
-      <div className={styles.logo}>이길어때</div>
+      <div className={styles.logo}>
+        <img
+          src="/images/HATWlogo.png"
+          alt="HATW 로고"
+          style={{
+            width: "100%",
+            maxWidth: 200,
+            height: "auto",
+            display: "block",
+            margin: "0 auto",
+          }}
+        />
+      </div>
 
       {/* 2) 2초 뒤에 페이드인될 로그인 박스 */}
       <main className={`${styles.loginBox} ${styles.formContainer}`}>

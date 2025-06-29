@@ -15,14 +15,14 @@ export default function BookmarkPage() {
   const [newAddress, setNewAddress] = useState("");
   const navigate = useNavigate();
   const token = useMemo(() => localStorage.getItem("token"), []);
-  
+
   useEffect(() => {
     if (!token) {
       alert("토큰이 만료되었습니다.");
       navigate("/login");
       return;
     }
-    
+
     getBookmarks(token)
       .then((res) => {
         console.log(res);
@@ -99,7 +99,34 @@ export default function BookmarkPage() {
   return (
     <div className={styles.pageWrapper}>
       <header className={styles.headerBar}>
-        <span className={styles.headerTitle}>즐겨찾기</span>
+        <div
+          style={{
+            display: "flex",
+            alignItems: "center",
+            width: "100%",
+            position: "relative",
+          }}
+        >
+          <img
+            src="/images/HATWlogo.png"
+            alt="HATW 로고"
+            style={{
+              height: 32,
+              width: "auto",
+              display: "block",
+              position: "absolute",
+              left: 0,
+              top: "50%",
+              transform: "translateY(-50%)",
+            }}
+          />
+          <span
+            className={styles.headerTitle}
+            style={{ margin: "0 auto", display: "block", textAlign: "center" }}
+          >
+            즐겨찾기
+          </span>
+        </div>
       </header>
 
       <div className={styles.itemList}>

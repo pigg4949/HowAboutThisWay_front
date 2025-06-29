@@ -23,6 +23,24 @@ export default function MainPage() {
   return (
     <>
       <main className={styles.main}>
+        {/* 좌측상단 로고 이미지 */}
+        <div
+          style={{
+            position: "absolute",
+            top: 24,
+            left: 24,
+            height: 40,
+            display: "flex",
+            alignItems: "center",
+            zIndex: 10,
+          }}
+        >
+          <img
+            src="/images/HATWlogo.png"
+            alt="HATW 로고"
+            style={{ height: 40, width: "auto", display: "block" }}
+          />
+        </div>
         <div className={styles.cardGrid}>
           <Link to="/map" className={styles.card}>
             <img

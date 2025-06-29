@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import {
   getUserInfo,
   updateUser,
@@ -86,22 +86,34 @@ export default function MyPage() {
   return (
     <>
       <header className={styles.mypageHeader}>
-        <button
-          onClick={() => navigate("/main")}
-          className={styles.backButton}
+        <div
           style={{
-            background: "none",
-            boxShadow: "none",
-            border: "none",
-            outline: "none",
-            padding: 0,
-            margin: 0,
-            minWidth: 0,
+            display: "flex",
+            alignItems: "center",
+            width: "100%",
+            position: "relative",
           }}
         >
-          ←
-        </button>
-        <h2 className={styles.pageTitle}>내 정보</h2>
+          <img
+            src="/images/HATWlogo.png"
+            alt="HATW 로고"
+            style={{
+              height: 32,
+              width: "auto",
+              display: "block",
+              position: "absolute",
+              left: 0,
+              top: "50%",
+              transform: "translateY(-50%)",
+            }}
+          />
+          <h2
+            className={styles.pageTitle}
+            style={{ margin: "0 auto", display: "block", textAlign: "center" }}
+          >
+            내 정보
+          </h2>
+        </div>
       </header>
       <main className={styles.mainContent}>
         <div className={styles.formGroup}>
@@ -152,6 +164,17 @@ export default function MyPage() {
           회원탈퇴
         </button>
       </main>
+      <nav className={styles.bottomNav}>
+        <Link to="/bookmark" className={styles.navItem}>
+          <img src="/images/icon-star.png" alt="즐겨찾기" />
+        </Link>
+        <Link to="/main" className={styles.navItem}>
+          <img src="/images/icon-home.png" alt="홈" />
+        </Link>
+        <Link to="/map" className={styles.navItem}>
+          <img src="/images/icon-find.png" alt="길찾기" />
+        </Link>
+      </nav>
     </>
   );
 }
