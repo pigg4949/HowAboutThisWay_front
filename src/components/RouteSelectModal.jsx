@@ -28,7 +28,46 @@ function formatDistance(m) {
   return `${m}m`;
 }
 
-export default function RouteSelectModal({ routes, onSelect, onClose }) {
+function sortRoutes(routes, sortOption) {
+  if (sortOption === "transfer") {
+    return routes
+      .slice()
+      .sort(
+        (a, b) => (a.data.transferCount || 0) - (b.data.transferCount || 0)
+      );
+  }
+  if (sortOption === "distance") {
+    return routes
+      .slice()
+      .sort(
+        (a, b) => getTotalDistance(a.data.legs) - getTotalDistance(b.data.legs)
+      );
+  }
+  if (sortOption === "time") {
+    return routes
+      .slice()
+      .sort((a, b) => (a.data.totalTime || 0) - (b.data.totalTime || 0));
+  }
+  if (sortOption === "walk") {
+    return routes
+      .slice()
+      .sort(
+        (a, b) =>
+          getTotalWalkDistance(a.data.legs) - getTotalWalkDistance(b.data.legs)
+      );
+  }
+  // "default" or 기타: API 순서 그대로
+  return routes;
+}
+
+export default function RouteSelectModal({
+  routes,
+  onSelect,
+  onClose,
+  sortOption = "default",
+  onSortChange,
+}) {
+  const sortedRoutes = sortRoutes(routes, sortOption);
   return (
     <div
       style={{
@@ -54,11 +93,27 @@ export default function RouteSelectModal({ routes, onSelect, onClose }) {
           boxShadow: "0 4px 24px rgba(0,0,0,0.13)",
         }}
       >
-        <h3 style={{ marginBottom: 18, fontSize: 20, textAlign: "center" }}>
+        <h3 style={{ marginBottom: 10, fontSize: 20, textAlign: "center" }}>
           경로 선택
         </h3>
+        {/* 정렬 옵션 셀렉트박스 */}
+        {onSortChange && (
+          <div style={{ marginBottom: 16, textAlign: "right" }}>
+            <select
+              value={sortOption}
+              onChange={(e) => onSortChange(e.target.value)}
+              style={{ fontSize: 14, padding: "4px 10px", borderRadius: 6 }}
+            >
+              <option value="default">최적(추천)</option>
+              <option value="transfer">최소환승</option>
+              <option value="distance">최단거리</option>
+              <option value="time">최단시간</option>
+              <option value="walk">최소도보</option>
+            </select>
+          </div>
+        )}
         <div style={{ maxHeight: 350, overflowY: "auto" }}>
-          {routes.map((route, idx) => {
+          {sortedRoutes.map((route, idx) => {
             const data = route.data;
             const totalDistance = getTotalDistance(data.legs);
             const totalWalkDistance = getTotalWalkDistance(data.legs);

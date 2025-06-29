@@ -9,6 +9,7 @@ import {
 } from "../api/Map";
 import ReportModal from "./ReportModal";
 import RouteSelectModal from "./RouteSelectModal";
+import BouncingDots from "./BouncingDots";
 
 export default function MapPage() {
   const mapRef = useRef(null);
@@ -194,12 +195,16 @@ export default function MapPage() {
   // 검색 버튼 클릭 시 경로 검색
   const [showRouteSelectModal, setShowRouteSelectModal] = useState(false);
   const [routeOptions, setRouteOptions] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [routeSortOption, setRouteSortOption] = useState("default");
 
   const handleSearch = async () => {
     if (!selectedLocations.start || !selectedLocations.end) {
       alert("출발지와 도착지를 모두 선택해주세요.");
       return;
     }
+    setLoading(true);
+    setRouteSortOption("default");
     try {
       const startLocation = selectedLocations.start;
       const endLocation = selectedLocations.end;
@@ -255,11 +260,15 @@ export default function MapPage() {
       alert("경로 검색 중 오류가 발생했습니다.");
       setRoutes([]);
       setShowRoutePanel(false);
+    } finally {
+      setLoading(false);
     }
   };
 
   // 모달에서 경로 선택 시 호출
   const handleRouteSelect = (route, idx) => {
+    console.log("선택한 경로 데이터:", route);
+    console.log("선택한 경로 인덱스:", idx);
     setRoutes([route]);
     setSelectedRouteIdx(0);
     setShowRoutePanel(true);
@@ -453,6 +462,24 @@ export default function MapPage() {
 
   return (
     <div className={styles.pageWrapper}>
+      {loading && (
+        <div
+          style={{
+            position: "fixed",
+            top: 0,
+            left: 0,
+            width: "100vw",
+            height: "100vh",
+            background: "rgba(255,255,255,0.6)",
+            zIndex: 9999,
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+          }}
+        >
+          <BouncingDots style={{ transform: "scale(2)" }} />
+        </div>
+      )}
       <header className={styles.mapHeader}>
         <div className={styles.headerLeft}>
           <div className={styles.userTypeBtns}>
@@ -627,6 +654,28 @@ export default function MapPage() {
             pointerEvents: showRoutePanel ? "auto" : "none",
           }}
         >
+          {/* 경로 재선택 버튼 */}
+          {showRoutePanel && (
+            <button
+              style={{
+                position: "absolute",
+                top: 16,
+                right: 20,
+                zIndex: 40,
+                background: "#ffe6a7",
+                border: "1px solid #f5d492",
+                borderRadius: 8,
+                padding: "4px 14px",
+                fontWeight: 500,
+                fontSize: 13,
+                cursor: "pointer",
+                boxShadow: "0 1px 4px rgba(0,0,0,0.06)",
+              }}
+              onClick={() => setShowRouteSelectModal(true)}
+            >
+              경로 재선택
+            </button>
+          )}
           <div
             style={{
               width: 40,
@@ -745,6 +794,8 @@ export default function MapPage() {
           routes={routeOptions}
           onSelect={handleRouteSelect}
           onClose={() => setShowRouteSelectModal(false)}
+          sortOption={routeSortOption}
+          onSortChange={setRouteSortOption}
         />
       )}
     </div>
