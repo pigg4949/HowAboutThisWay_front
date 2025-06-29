@@ -118,6 +118,11 @@ export default function BookmarkPage() {
               left: 0,
               top: "50%",
               transform: "translateY(-50%)",
+              cursor: "pointer",
+            }}
+            onClick={() => {
+              const isAdmin = localStorage.getItem("isAdmin") === "1";
+              navigate(isAdmin ? "/admin" : "/main");
             }}
           />
           <span

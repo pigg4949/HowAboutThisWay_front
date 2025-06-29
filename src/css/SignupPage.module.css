@@ -76,6 +76,13 @@
   height: 48px;
   margin-bottom: 0;
 }
+.ssnGroup span {
+  display: flex;
+  align-items: center;
+  height: 48px;
+  font-size: 20px;
+  font-weight: bold;
+}
 
 /* 7) 약관 동의 그룹 */
 
@@ -120,6 +127,8 @@
   box-shadow: 0 2px 16px rgba(0, 0, 0, 0.18);
   padding: 24px;
   animation: modalIn 0.16s ease-out;
+  max-height: 50vh;
+  overflow-y: auto;
 }
 @keyframes modalIn {
   from {
@@ -231,4 +240,45 @@
   border: none;
   cursor: pointer;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.headerTitle {
+  position: absolute;
+  left: 0;
+  right: 0;
+  text-align: center;
+  font-weight: 700;
+  font-size: 20px;
+  pointer-events: none;
+}
+
+.headerBar {
+  width: 100%;
+  background: #ede7dd;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px;
+  box-sizing: border-box;
+  max-width: 100vw;
+  overflow-x: hidden;
+}
+.headerLogo {
+  flex: 1;
+  text-align: left;
+}
+.headerLogo img {
+  max-width: 100%;
+  height: 32px;
+  display: block;
+}
+.headerTitle {
+  flex: 1;
+  text-align: center;
+  font-size: 18px;
+  font-weight: 600;
+  color: #333;
+}
+.headerRight {
+  flex: 1;
 }

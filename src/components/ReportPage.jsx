@@ -75,7 +75,15 @@ export default function ReportPage() {
           <img
             src="/images/HATWlogo.png"
             alt="HATW 로고"
-            style={{ height: 32, width: "auto", display: "block" }}
+            style={{
+              height: 32,
+              width: "auto",
+              display: "block",
+              cursor: "pointer",
+            }}
+            onClick={() => {
+              navigate(isAdmin ? "/admin" : "/main");
+            }}
           />
         </span>
         <span className={styles.headerTitle}>제보관리</span>

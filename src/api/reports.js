@@ -1,7 +1,7 @@
-import axios from "./axios";
+import api from "./axios";
 
 export const getMyReports = async (token) => {
-  const res = await axios.get("/api/reports/me", {
+  const res = await api.get("/reports/me", {
     headers: { Authorization: `Bearer ${token}` },
   });
   return res.data;

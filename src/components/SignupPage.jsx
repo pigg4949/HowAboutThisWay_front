@@ -213,17 +213,27 @@ export default function SignupPage() {
   return (
     <div className={styles.pageWrapper}>
       <header className={styles.headerBar}>
-        <Link to="/" className={styles.backButton}>
-          ←
-        </Link>
+        <span className={styles.headerLogo}>
+          <img
+            src="/images/HATWlogo.png"
+            alt="HATW 로고"
+            style={{
+              height: 32,
+              width: "auto",
+              display: "block",
+              cursor: "pointer",
+            }}
+            onClick={() => navigate("/")}
+          />
+        </span>
         <span className={styles.headerTitle}>회원가입</span>
         <span className={styles.headerRight}></span>
       </header>
 
       <main className={styles.mainContent}>
-        <form onSubmit={handleSubmit}>
+        <form onSubmit={handleSubmit} className={styles.signupForm}>
           {/* 아이디 */}
-          <div className={styles.formGroup}>
+          <div style={{ marginBottom: 15 }}>
             <label htmlFor="userId">아이디</label>
             <div className={styles.inputWithButton}>
               <input
@@ -245,9 +255,9 @@ export default function SignupPage() {
           </div>
 
           {/* 주민등록번호 */}
-          <div className={styles.formGroup}>
+          <div style={{ marginBottom: 15 }}>
             <label>주민등록번호</label>
-            <div className={styles.ssnInput}>
+            <div className={styles.ssnGroup}>
               <input
                 type="text"
                 value={ssnFront}
@@ -258,19 +268,22 @@ export default function SignupPage() {
               />
               <span>-</span>
               <input
-                type="password"
-                value={ssnBack}
-                onChange={(e) => setSsnBack(e.target.value.slice(0, 1))}
+                type="text"
+                value={"*******"}
+                onChange={(e) =>
+                  setSsnBack(e.target.value.replace(/[^0-9]/g, "").slice(0, 1))
+                }
                 placeholder="뒤 1자리"
-                maxLength={1}
+                maxLength={7}
+                inputMode="numeric"
+                style={{ letterSpacing: "2px" }}
                 required
               />
-              <span>******</span>
             </div>
           </div>
 
           {/* 이름 */}
-          <div className={styles.formGroup}>
+          <div style={{ marginBottom: 15 }}>
             <label htmlFor="name">이름</label>
             <input
               id="name"
@@ -283,7 +296,7 @@ export default function SignupPage() {
           </div>
 
           {/* 비밀번호 */}
-          <div className={styles.formGroup}>
+          <div style={{ marginBottom: 15 }}>
             <label htmlFor="password">비밀번호</label>
             <input
               id="password"
@@ -296,7 +309,7 @@ export default function SignupPage() {
           </div>
 
           {/* 비밀번호 확인 */}
-          <div className={styles.formGroup}>
+          <div style={{ marginBottom: 15 }}>
             <label htmlFor="confirm">비밀번호 확인</label>
             <input
               id="confirm"
@@ -307,16 +320,16 @@ export default function SignupPage() {
               required
             />
             {confirm && password !== confirm && (
-              <span className={styles.errorText}>
+              <span style={{ color: "red", fontSize: 12 }}>
                 비밀번호가 일치하지 않습니다.
               </span>
             )}
           </div>
 
           {/* 휴대폰 인증 */}
-          <div className={styles.formGroup}>
+          <div style={{ marginBottom: 15 }}>
             <label>휴대폰 인증</label>
-            <div className={styles.phoneInput}>
+            <div className={styles.inputWithButton}>
               <input
                 type="tel"
                 value={formatPhoneNumber(phone)}
@@ -329,14 +342,14 @@ export default function SignupPage() {
               <button
                 type="button"
                 onClick={handleVerifyCode}
-                className={styles.verifyButton}
+                className={styles.btnInline}
                 disabled={codeSent}
               >
                 인증번호 발송
               </button>
             </div>
             {codeSent && (
-              <div className={styles.codeInput}>
+              <div className={styles.inputWithButton} style={{ marginTop: 8 }}>
                 <input
                   type="text"
                   value={code}
@@ -347,57 +360,51 @@ export default function SignupPage() {
                 <button
                   type="button"
                   onClick={handleCodeConfirm}
-                  className={styles.confirmButton}
+                  className={styles.btnInline}
                 >
                   확인
                 </button>
-                <span className={styles.timer}>
+                <span style={{ marginLeft: 8, fontSize: 13 }}>
                   {Math.floor(timeLeft / 60)}:
                   {(timeLeft % 60).toString().padStart(2, "0")}
                 </span>
               </div>
             )}
             {verified && (
-              <span className={styles.successText}>
+              <span style={{ color: "green", fontSize: 12 }}>
                 ✅ 인증이 완료되었습니다.
               </span>
             )}
           </div>
 
           {/* 약관 동의 */}
-          <div className={styles.formGroup}>
+          <div style={{ marginBottom: 15 }}>
             <label>약관 동의</label>
-            <div className={styles.termsContainer}>
-              <label className={styles.checkboxLabel}>
+            <div className={styles.termsGroup}>
+              <label>
                 <input
                   type="checkbox"
                   checked={agreeService}
                   onChange={(e) => setAgreeService(e.target.checked)}
                 />
-                <span
-                  onClick={() => setModalTerm("service")}
-                  className={styles.termLink}
-                >
+                <span onClick={() => setModalTerm("service")}>
                   {termsData.service.title} (필수)
                 </span>
               </label>
-              <label className={styles.checkboxLabel}>
+              <label>
                 <input
                   type="checkbox"
                   checked={agreeLocation}
                   onChange={(e) => setAgreeLocation(e.target.checked)}
                 />
-                <span
-                  onClick={() => setModalTerm("location")}
-                  className={styles.termLink}
-                >
+                <span onClick={() => setModalTerm("location")}>
                   {termsData.location.title} (필수)
                 </span>
               </label>
             </div>
           </div>
 
-          <button type="submit" className={styles.submitButton}>
+          <button type="submit" className={styles.buttonPrimary}>
             회원가입
           </button>
         </form>

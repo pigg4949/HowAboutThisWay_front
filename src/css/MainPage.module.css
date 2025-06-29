@@ -3,8 +3,9 @@
   width: 100%;
   background: url("/images/background.jpg") no-repeat center center/cover;
   display: flex;
+  flex-direction: column;
   align-items: center;
-  justify-content: center;
+  justify-content: flex-start;
   flex-grow: 1;
 }
 .compass {
@@ -89,7 +90,7 @@
   background: none;
   border: none;
   font-size: 28px;
-  color: #E74C3C;
+  color: #e74c3c;
   cursor: pointer;
   z-index: 1;
 }
@@ -124,20 +125,25 @@
 }
 .buttonSecondary,
 .buttonPrimary {
-  padding: 10px 20px;
+  height: 40px;
+  padding: 0 16px;
   border-radius: 6px;
   border: none;
   color: #fff;
   font-size: 14px;
   flex: 1;
   cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
 }
 .buttonSecondary {
-  background: #81CFE0;
+  background: #81cfe0;
   margin-right: 8px;
 }
 .buttonPrimary {
-  background: #F0837B;
+  background: #f0837b;
 }
 .buttonSecondary:hover,
 .buttonPrimary:hover,

@@ -193,9 +193,11 @@ export default function ReportModal({ onClose }) {
             }}
             title="현재 위치로 이동"
           >
-            <span role="img" aria-label="현재 위치">
-              🧭
-            </span>
+            <img
+              src="/images/icon-location.png"
+              alt="현재 위치"
+              style={{ width: 24, height: 24 }}
+            />
           </button>
           {/* 중앙 고정 마커 (항상 map 위에 보임) */}
           <div

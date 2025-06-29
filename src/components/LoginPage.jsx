@@ -111,6 +111,7 @@ export default function LoginPage() {
                 minWidth: 0,
                 height: 48,
                 display: "flex",
+                textDecoration: "none",
               }}
             >
               <button
