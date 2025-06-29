@@ -1,6 +1,6 @@
 import React from "react";
 import { Link, useNavigate } from "react-router-dom";
-import api from "../api/axios";
+import { loginUser } from "../api/auth";
 import styles from "../css/LoginPage.module.css";
 
 export default function LoginPage() {
@@ -9,12 +9,22 @@ export default function LoginPage() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const res = await api.post("/users/login", {
-        userId: e.target.userId.value,
-        passwordHash: e.target.password.value,
-      });
-      localStorage.setItem("token", res.data);
-      navigate("/main");
+      const res = await loginUser(
+        e.target.userId.value,
+        e.target.password.value
+      );
+      localStorage.setItem("token", res.token);
+      localStorage.setItem(
+        "isAdmin",
+        res.isAdmin === 1 || res.isAdmin === "1" || res.isAdmin === true
+          ? "1"
+          : "0"
+      );
+      if (res.isAdmin === 1 || res.isAdmin === "1" || res.isAdmin === true) {
+        navigate("/admin");
+      } else {
+        navigate("/main");
+      }
     } catch (err) {
       alert("로그인 실패: " + (err.response?.data?.message || err.message));
     }
@@ -27,6 +37,16 @@ export default function LoginPage() {
       KAKAO_REDIRECT_URI
     )}&response_type=code`;
     window.location.href = kakaoAuthUrl;
+  };
+
+  const GOOGLE_CLIENT_ID =
+    "986385424479-823jtt1pk037afk7obm3rnnesfo26ik3.apps.googleusercontent.com";
+  const GOOGLE_REDIRECT_URI = "http://localhost:5173/google-callback";
+  const handleGoogleLogin = () => {
+    const googleAuthUrl = `https://accounts.google.com/o/oauth2/v2/auth?client_id=${GOOGLE_CLIENT_ID}&redirect_uri=${encodeURIComponent(
+      GOOGLE_REDIRECT_URI
+    )}&response_type=code&scope=openid%20email%20profile`;
+    window.location.href = googleAuthUrl;
   };
 
   return (
@@ -101,8 +121,9 @@ export default function LoginPage() {
               type="button"
               className="btnSecondary"
               style={{ flex: "1 1 48%", minWidth: 0, height: 48 }}
+              onClick={handleGoogleLogin}
             >
-              네이버로 로그인
+              구글로 로그인
             </button>
           </div>
         </form>

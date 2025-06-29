@@ -1,6 +1,12 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import api from "../api/axios";
+import {
+  getUserInfo,
+  updateUser,
+  logoutUser,
+  signoutUser,
+} from "../api/member";
+import { createInquiry } from "../api/inquiry";
 import styles from "../css/MyPage.module.css";
 
 export default function MyPage() {
@@ -13,8 +19,8 @@ export default function MyPage() {
   useEffect(() => {
     (async () => {
       try {
-        const res = await api.get("/users/info");
-        setInfo(res.data);
+        const res = await getUserInfo();
+        setInfo(res);
       } catch {
         alert("로그인 토큰 만료");
         navigate("/login");
@@ -27,20 +33,51 @@ export default function MyPage() {
       alert("비밀번호가 일치하지 않습니다.");
       return;
     }
-    await api.post("/mypage/update", { password });
-    alert("변경 완료");
+    try {
+      await updateUser({ password });
+      alert("변경 완료");
+      setPassword("");
+      setConfirm("");
+    } catch (err) {
+      alert(
+        "비밀번호 변경 실패: " + (err.response?.data?.message || err.message)
+      );
+    }
   };
+
   const handleInquiry = async () => {
-    await api.post("/mypage/inquiry", { inquiry });
-    alert("문의 전송됨");
+    if (!inquiry.trim()) {
+      alert("문의 내용을 입력하세요.");
+      return;
+    }
+    const token = localStorage.getItem("token");
+    if (!token) {
+      alert("로그인이 필요합니다.");
+      navigate("/login");
+      return;
+    }
+    try {
+      await createInquiry({ content: inquiry }, token);
+      alert("문의가 전송되었습니다.");
+      setInquiry("");
+    } catch (err) {
+      alert("문의 전송 실패: " + (err.response?.data?.message || err.message));
+    }
   };
+
   const handleLogout = async () => {
-    await api.post("/logout");
+    try {
+      await logoutUser();
+    } catch (err) {
+      // 서버 에러 무시(오프라인 등)
+    }
+    localStorage.removeItem("token");
     navigate("/");
   };
+
   const handleDelete = async () => {
     if (!window.confirm("탈퇴하시겠습니까?")) return;
-    await api.post("/users/delete");
+    await signoutUser();
     navigate("/");
   };
 

@@ -1,6 +1,6 @@
 import { useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
-import api from "../api/axios";
+import { handleKakaoCallback } from "../api/auth";
 
 export default function KakaoCallback() {
   const navigate = useNavigate();
@@ -12,14 +12,15 @@ export default function KakaoCallback() {
 
     const url = new URL(window.location.href);
     const code = url.searchParams.get("code");
+
     if (code) {
-      api
-        .get(`/users/kakao/callback?code=${code}`)
+      handleKakaoCallback(code)
         .then((res) => {
           console.log("카카오 로그인 응답:", res);
-          // 필요시 토큰 저장
-          localStorage.setItem("token", res.data.token);
-          if (res && res.status === 200 && res.data && res.data.userId) {
+          // 토큰과 userId가 있으면 성공
+          if (res && res.token && res.userId) {
+            localStorage.setItem("token", res.token);
+            localStorage.setItem("isAdmin", "0");
             navigate("/main");
           } else {
             alert("카카오 로그인 실패: 사용자 정보 없음");

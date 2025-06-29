@@ -1,12 +1,24 @@
 // src/pages/MainPage.jsx
-import React, { useState } from "react";
-import { Link } from "react-router-dom";
+import React, { useEffect, useState, useMemo } from "react";
+import { Link, useNavigate } from "react-router-dom";
 import styles from "../css/MainPage.module.css";
-import { searchPOI, getPedestrianRoute, getTransitRoute } from "../api/Map";
 import ReportModal from "./ReportModal";
+import HelpModal from "./HelpModal";
 
 export default function MainPage() {
   const [showReportModal, setShowReportModal] = useState(false);
+  const [showHelpModal, setShowHelpModal] = useState(
+    () => !localStorage.getItem("helpModalHide")
+  );
+  const navigate = useNavigate();
+  const token = useMemo(() => localStorage.getItem("token"), []);
+
+  useEffect(() => {
+    if (!token) {
+      alert("토큰이 만료되었습니다.");
+      navigate("/login");
+    }
+  }, [token, navigate]);
 
   return (
     <>
@@ -57,6 +69,7 @@ export default function MainPage() {
       {showReportModal && (
         <ReportModal onClose={() => setShowReportModal(false)} />
       )}
+      <HelpModal open={showHelpModal} onClose={() => setShowHelpModal(false)} />
     </>
   );
 }

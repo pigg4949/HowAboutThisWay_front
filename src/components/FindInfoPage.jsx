@@ -1,53 +1,47 @@
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
-import api from "../api/axios";
+import { findUserId, resetPassword, formatPhoneNumber } from "../api/member";
 import styles from "../css/FindInfoPage.module.css";
 
 export default function FindInfoPage() {
   const [name, setName] = useState("");
-  const [phoneForFindId, setPhoneForFindId] = useState("");
   const [foundUserId, setFoundUserId] = useState("");
   const [userId, setUserId] = useState("");
+  const [phoneForFindId, setPhoneForFindId] = useState("");
   const [phoneForResetPwd, setPhoneForResetPwd] = useState("");
   const [findIdMessage, setFindIdMessage] = useState("");
   const [resetPwdMessage, setResetPwdMessage] = useState("");
 
-  // 전화번호 하이픈 자동 포맷 함수
-  function formatPhone(value) {
-    const onlyNums = value.replace(/[^0-9]/g, "");
-    if (onlyNums.length < 4) return onlyNums;
-    if (onlyNums.length < 8)
-      return onlyNums.slice(0, 3) + "-" + onlyNums.slice(3);
-    return (
-      onlyNums.slice(0, 3) +
-      "-" +
-      onlyNums.slice(3, 7) +
-      "-" +
-      onlyNums.slice(7, 11)
-    );
-  }
+  // 전화번호 입력 처리
+  const handlePhoneInput = (value) => {
+    return value.replace(/[^0-9]/g, "").slice(0, 11);
+  };
 
   const handleFindId = async (e) => {
     e.preventDefault();
     try {
-      await api.post("/find-id", {
-        name,
-        phone: phoneForFindId.replace(/-/g, ""),
-      });
-      setFindIdMessage("입력하신 연락처로 아이디가 문자로 발송되었습니다.");
-      setFoundUserId("");
-    } catch {
-      setFindIdMessage("아이디 찾기 실패");
+      const response = await findUserId(name, phoneForFindId);
+      const foundId = response.userId;
+      if (foundId) {
+        alert(`✅ 회원님의 아이디는 "${foundId}"입니다.`);
+        setFoundUserId(foundId);
+        setFindIdMessage("");
+      } else {
+        setFindIdMessage("해당 정보로 가입된 아이디를 찾을 수 없습니다.");
+      }
+    } catch (err) {
+      setFindIdMessage("❌ 아이디 찾기 실패. 입력 정보를 다시 확인해주세요.");
     }
   };
 
   const handleResetPwd = async (e) => {
     e.preventDefault();
+
+    const cleanedPhone = phoneForResetPwd.replace(/-/g, "");
+    console.log("보내는 전화번호:", cleanedPhone);
+
     try {
-      await api.post("/reset-password", {
-        userId,
-        phone: phoneForResetPwd.replace(/-/g, ""),
-      });
+      await resetPassword(userId, cleanedPhone);
       setResetPwdMessage("임시 비밀번호가 발송되었습니다.");
     } catch {
       setResetPwdMessage("비밀번호 재설정 실패");
@@ -56,15 +50,11 @@ export default function FindInfoPage() {
 
   return (
     <div className={styles.mainContent}>
-      <Link
-        to="/"
-        className={styles.backButton}
-        style={{ position: "absolute", top: 18, left: 18, zIndex: 10 }}
-      >
-        ←
-      </Link>
       <section className={styles.findSection}>
         <div className={styles.header}>
+          <Link to="/" className={styles.backButton}>
+            ←
+          </Link>
           <h2 className={styles.pageTitle}>아이디/비밀번호 찾기</h2>
         </div>
         <h3>아이디 찾기</h3>
@@ -79,11 +69,9 @@ export default function FindInfoPage() {
           />
           <input
             type="tel"
-            value={formatPhone(phoneForFindId)}
+            value={formatPhoneNumber(phoneForFindId)}
             onChange={(e) =>
-              setPhoneForFindId(
-                e.target.value.replace(/[^0-9]/g, "").slice(0, 11)
-              )
+              setPhoneForFindId(handlePhoneInput(e.target.value))
             }
             placeholder="연락처(휴대폰 번호)"
             className={styles.input}
@@ -93,6 +81,9 @@ export default function FindInfoPage() {
             찾기
           </button>
         </form>
+        {foundUserId && (
+          <p className={styles.resultText}>아이디: {foundUserId}</p>
+        )}
         {findIdMessage && <p className={styles.resultText}>{findIdMessage}</p>}
       </section>
 
@@ -104,17 +95,17 @@ export default function FindInfoPage() {
             value={userId}
             onChange={(e) => setUserId(e.target.value)}
             placeholder="아이디"
+            className={styles.input}
             required
           />
           <input
             type="tel"
-            value={formatPhone(phoneForResetPwd)}
+            value={formatPhoneNumber(phoneForResetPwd)}
             onChange={(e) =>
-              setPhoneForResetPwd(
-                e.target.value.replace(/[^0-9]/g, "").slice(0, 11)
-              )
+              setPhoneForResetPwd(handlePhoneInput(e.target.value))
             }
             placeholder="휴대폰 번호"
+            className={styles.input}
             required
           />
           <button type="submit" className={styles.btnPrimary}>

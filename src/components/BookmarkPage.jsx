@@ -1,6 +1,11 @@
-import React, { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
-import api from "../api/axios";
+// src/pages/BookmarkPage.jsx
+import React, { useEffect, useState, useMemo } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import {
+  getBookmarks,
+  createBookmark,
+  deleteBookmark,
+} from "../api/bookmarker";
 import styles from "../css/BookmarkPage.module.css";
 
 export default function BookmarkPage() {
@@ -8,38 +13,36 @@ export default function BookmarkPage() {
   const [showAddForm, setShowAddForm] = useState(false);
   const [newAlias, setNewAlias] = useState("");
   const [newAddress, setNewAddress] = useState("");
-
+  const navigate = useNavigate();
+  const token = useMemo(() => localStorage.getItem("token"), []);
+  
   useEffect(() => {
-    (async () => {
-      try {
-        const res = await api.get("/bookmarker");
-        setItems(Array.isArray(res.data) ? res.data : []);
-      } catch (err) {
-        // API 실패 시 더미 데이터로 대체
-        setItems([
-          {
-            id: 1,
-            alias: "우리집",
-            icon: "icon-home.png",
-            address: "서울시 강남구 테헤란로 123",
-          },
-          {
-            id: 2,
-            alias: "회사",
-            icon: "icon-location.png",
-            address: "서울시 중구 을지로 456",
-          },
-        ]);
-      }
-    })();
-  }, []);
+    if (!token) {
+      alert("토큰이 만료되었습니다.");
+      navigate("/login");
+      return;
+    }
+    
+    getBookmarks(token)
+      .then((res) => {
+        console.log(res);
+        setItems(Array.isArray(res) ? res : []);
+      })
+      .catch((error) => {
+        console.error("북마크를 불러오는 중 오류 발생:", error);
+        setItems([]);
+      });
+  }, [token, navigate]);
 
   const handleDelete = async (idx) => {
+    if (!token) {
+      alert("로그인이 필요합니다.");
+      navigate("/login");
+      return;
+    }
     try {
-      await api.delete(`/bookmarker/${idx}`);
-      // 삭제 후 목록 새로고침
-      const res = await api.get("/bookmarker");
-      setItems(Array.isArray(res.data) ? res.data : []);
+      await deleteBookmark(token, idx);
+      setItems((prev) => prev.filter((item) => item.idx !== idx));
     } catch {
       alert("삭제 실패");
     }
@@ -52,19 +55,19 @@ export default function BookmarkPage() {
   };
 
   const handleAddSave = async () => {
+    if (!token) {
+      alert("로그인이 필요합니다.");
+      navigate("/login");
+      return;
+    }
     if (!newAlias.trim() || !newAddress.trim()) {
       alert("별명과 주소를 모두 입력하세요.");
       return;
     }
     try {
-      // 서버로 POST 요청 보내기
-      await api.post("/bookmarker", {
-        label: newAlias,
-        address: newAddress,
-      });
-      // 서버에서 추가된 북마크 목록을 다시 불러오기
-      const res = await api.get("/bookmarker");
-      setItems(Array.isArray(res.data) ? res.data : []);
+      await createBookmark(token, { label: newAlias, address: newAddress });
+      const data = await getBookmarks(token);
+      setItems(Array.isArray(data) ? data : []);
       setShowAddForm(false);
     } catch (err) {
       alert(
@@ -73,8 +76,24 @@ export default function BookmarkPage() {
     }
   };
 
-  const handleAddCancel = () => {
-    setShowAddForm(false);
+  const handleDestination = async (address) => {
+    if (!token) {
+      alert("로그인이 필요합니다.");
+      navigate("/login");
+      return;
+    }
+    if (!address) {
+      alert("올바르지 못한 즐겨찾기 주소입니다. 이 항목을 삭제해 주세요.");
+      return;
+    }
+    try {
+      // MapPage로 이동하면서 address 값을 state로 전달
+      navigate("/map", { state: { destinationAddress: address } });
+      // 또는 쿼리 파라미터: navigate(`/map?end=${encodeURIComponent(address)}`);
+    } catch (error) {
+      console.error("목적지 설정 중 오류 발생:", error);
+      alert("목적지 설정에 실패했습니다.");
+    }
   };
 
   return (
@@ -84,10 +103,9 @@ export default function BookmarkPage() {
       </header>
 
       <div className={styles.itemList}>
-        {Array.isArray(items) && items.length === 0 && !showAddForm ? (
+        {items.length === 0 && !showAddForm ? (
           <div className={styles.emptyMsg}>즐겨찾기 내역이 없습니다.</div>
         ) : (
-          Array.isArray(items) &&
           items.map((item) => (
             <div key={item.idx} className={styles.bookmarkItem}>
               <div className={styles.itemHeader}>
@@ -102,12 +120,14 @@ export default function BookmarkPage() {
                 </div>
               </div>
               <div className={styles.itemBody}>
-                <img
-                  src={`/images/${item.icon || "icon-location.png"}`}
-                  alt=""
-                />
+                <img src="/images/icon-location.png" alt="" />
                 <span className={styles.address}>{item.address}</span>
-                <button className={styles.setDestination}>목적지</button>
+                <button
+                  className={styles.setDestination}
+                  onClick={() => handleDestination(item.address)}
+                >
+                  목적지
+                </button>
               </div>
             </div>
           ))
@@ -131,7 +151,10 @@ export default function BookmarkPage() {
               <button className={styles.btnPrimary} onClick={handleAddSave}>
                 저장
               </button>
-              <button className={styles.btnSecondary} onClick={handleAddCancel}>
+              <button
+                className={styles.btnSecondary}
+                onClick={() => setShowAddForm(false)}
+              >
                 취소
               </button>
             </div>
@@ -150,7 +173,6 @@ export default function BookmarkPage() {
         <Link to="/main" className={styles.navItem}>
           <img src="/images/icon-home.png" alt="홈" />
         </Link>
-
         <Link to="/mypage" className={styles.navItem}>
           <img src="/images/icon-user.png" alt="내 정보" />
         </Link>

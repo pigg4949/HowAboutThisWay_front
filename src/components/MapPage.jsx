@@ -1,9 +1,14 @@
 /* global Tmapv2 */
 import React, { useEffect, useRef, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import styles from "../css/MapPage.module.css";
-import { searchPOI, getPedestrianRoute, getTransitRoute } from "../api/Map";
+import {
+  searchPOI,
+  getTransitWithConnector,
+  getTransitAllWalk,
+} from "../api/Map";
 import ReportModal from "./ReportModal";
+import RouteSelectModal from "./RouteSelectModal";
 
 export default function MapPage() {
   const mapRef = useRef(null);
@@ -12,6 +17,7 @@ export default function MapPage() {
   const [start, setStart] = useState("");
   const [end, setEnd] = useState("");
   const [error, setError] = useState(null);
+  const location = useLocation(); // 북마크에서 선택된 목적지를 map에 반영 시 필요한 설정
 
   // 마커 관리
   const [searchMarkers, setSearchMarkers] = useState([]);
@@ -58,13 +64,14 @@ export default function MapPage() {
   };
 
   // 출발지 마커 표시
-  const showStartMarker = (location) => {
+  const showStartMarker = (loc) => {
+    // location -> loc
     if (startMarker) startMarker.setMap(null);
 
     const marker = new window.Tmapv2.Marker({
-      position: new window.Tmapv2.LatLng(location.lat, location.lng),
+      position: new window.Tmapv2.LatLng(loc.lat, loc.lng),
       map: mapInstanceRef.current,
-      title: location.name,
+      title: loc.name,
       icon: "/markers/pin_r_m_s.png",
       iconSize: new window.Tmapv2.Size(24, 38),
     });
@@ -73,13 +80,14 @@ export default function MapPage() {
   };
 
   // 도착지 마커 표시
-  const showEndMarker = (location) => {
+  const showEndMarker = (loc) => {
+    // location -> loc
     if (endMarker) endMarker.setMap(null);
 
     const marker = new window.Tmapv2.Marker({
-      position: new window.Tmapv2.LatLng(location.lat, location.lng),
+      position: new window.Tmapv2.LatLng(loc.lat, loc.lng),
       map: mapInstanceRef.current,
-      title: location.name,
+      title: loc.name,
       icon: "/markers/pin_r_m_e.png",
       iconSize: new window.Tmapv2.Size(24, 38),
     });
@@ -184,6 +192,9 @@ export default function MapPage() {
   const [selectedRouteIdx, setSelectedRouteIdx] = useState(0); // 선택된 경로 인덱스
 
   // 검색 버튼 클릭 시 경로 검색
+  const [showRouteSelectModal, setShowRouteSelectModal] = useState(false);
+  const [routeOptions, setRouteOptions] = useState([]);
+
   const handleSearch = async () => {
     if (!selectedLocations.start || !selectedLocations.end) {
       alert("출발지와 도착지를 모두 선택해주세요.");
@@ -203,36 +214,15 @@ export default function MapPage() {
         resCoordType: "EPSG3857",
         searchOption: mode === "wheel" ? "4" : "0",
       };
-      // 도보 경로
-      const routeResult = await getPedestrianRoute(routeData);
-      // 대중교통 경로
-      const transitResult = await getTransitRoute(routeData);
-      console.log("[DEBUG] transitResult:", transitResult);
-      const newRoutes = [];
-      // 보행자 경로 추가
-      if (routeResult && routeResult.features) {
-        newRoutes.push({
-          type: "pedestrian",
-          data: routeResult,
-          instructions: routeResult.features
-            .map((f) => f.properties?.description)
-            .filter(Boolean)
-            .filter(
-              (desc) =>
-                desc.trim() &&
-                desc !== ", 17m" &&
-                desc !== ", 46m" &&
-                desc !== ", 57m" &&
-                desc !== ", 15m" &&
-                desc !== ", 6m" &&
-                desc !== ", 20m" &&
-                desc !== ", 31m" &&
-                desc !== ", 12m" &&
-                desc !== ", 22m"
-            ),
-        });
+
+      let transitResult;
+      if (mode === "wheel") {
+        transitResult = await getTransitWithConnector(routeData);
+      } else {
+        transitResult = await getTransitAllWalk(routeData);
       }
-      // 대중교통 경로 legs별로 추가 (기존 코드 대체)
+
+      const newRoutes = [];
       if (
         transitResult &&
         transitResult.metaData &&
@@ -240,7 +230,6 @@ export default function MapPage() {
         Array.isArray(transitResult.metaData.plan.itineraries)
       ) {
         transitResult.metaData.plan.itineraries.forEach((itinerary, idx) => {
-          // legs 배열을 한 줄 요약으로 안내 텍스트 생성
           const instructions = itinerary.legs.map((leg, lidx) => {
             return `${leg.mode || ""} ${leg.name || ""} ${
               leg.distance ? leg.distance + "m 이동" : ""
@@ -254,17 +243,8 @@ export default function MapPage() {
         });
       }
       if (newRoutes.length > 0) {
-        setRoutes(newRoutes);
-        setSelectedRouteIdx(0); // 기본 첫 번째 경로 선택
-        setShowRoutePanel(true);
-        // 지도에 경로 그리기(기본: 첫 번째 경로)
-        if (newRoutes[0].type === "pedestrian") {
-          drawPedestrianRoute(newRoutes[0].data);
-        } else {
-          // 대중교통 경로는 별도 draw 함수 필요시 추가
-          // drawTransitRoute(newRoutes[0].data);
-          clearRoutePolylines();
-        }
+        setRouteOptions(newRoutes);
+        setShowRouteSelectModal(true);
       } else {
         alert("경로 정보를 가져오는데 실패했습니다.");
         setRoutes([]);
@@ -275,6 +255,20 @@ export default function MapPage() {
       alert("경로 검색 중 오류가 발생했습니다.");
       setRoutes([]);
       setShowRoutePanel(false);
+    }
+  };
+
+  // 모달에서 경로 선택 시 호출
+  const handleRouteSelect = (route, idx) => {
+    setRoutes([route]);
+    setSelectedRouteIdx(0);
+    setShowRoutePanel(true);
+    setShowRouteSelectModal(false);
+    // 지도에 경로 그리기
+    if (route.type === "pedestrian") {
+      drawPedestrianRoute(route.data);
+    } else {
+      drawTransitRoute(route.data);
     }
   };
 
@@ -302,6 +296,7 @@ export default function MapPage() {
     }
   }, [showRoutePanel]);
 
+  // 지도 초기화 및 interval 관리
   useEffect(() => {
     const interval = setInterval(() => {
       if (window.tmapReady && mapRef.current) {
@@ -322,7 +317,6 @@ export default function MapPage() {
         }
       }
     }, 100);
-
     return () => {
       clearInterval(interval);
       if (mapInstanceRef.current) {
@@ -331,6 +325,43 @@ export default function MapPage() {
       }
     };
   }, []);
+
+  // BookmarkPage에서 전달된 목적지 주소 처리
+  useEffect(() => {
+    if (location.state && location.state.destinationAddress) {
+      const addressFromBookmark = location.state.destinationAddress;
+      setEnd(addressFromBookmark);
+      const searchAndSetDestination = async () => {
+        try {
+          const result = await searchPOI(addressFromBookmark);
+          const pois = result?.searchPoiInfo?.pois?.poi || [];
+          if (pois.length > 0) {
+            const firstPOI = pois[0];
+            handlePOISelection(firstPOI, "end");
+          } else {
+            alert(
+              `"${addressFromBookmark}"에 대한 검색 결과를 찾을 수 없습니다.`
+            );
+          }
+        } catch (err) {
+          console.error("자동 POI 검색 중 오류 발생:", err);
+          alert("주소 검색 중 오류가 발생했습니다.");
+        }
+      };
+      if (mapInstanceRef.current) {
+        searchAndSetDestination();
+      } else {
+        const checkMapLoaded = setInterval(() => {
+          if (mapInstanceRef.current) {
+            clearInterval(checkMapLoaded);
+            searchAndSetDestination();
+          }
+        }, 100);
+      }
+      // location.state는 일회성으로 사용 후 초기화하는 것이 좋습니다.
+      // navigate(".", { replace: true, state: {} }); // 예시
+    }
+  }, [location.state, mapInstanceRef.current]);
 
   // 지도에 대중교통 경로 폴리라인 그리기 함수 추가
   const drawTransitRoute = (itinerary) => {
@@ -388,6 +419,28 @@ export default function MapPage() {
     }
   };
 
+  // 현재 위치로 지도 이동
+  const handleMoveToCurrentLocation = () => {
+    if (!navigator.geolocation) {
+      alert("이 브라우저에서는 위치 정보를 지원하지 않습니다.");
+      return;
+    }
+    navigator.geolocation.getCurrentPosition(
+      (pos) => {
+        const { latitude, longitude } = pos.coords;
+        if (mapInstanceRef.current) {
+          mapInstanceRef.current.setCenter(
+            new window.Tmapv2.LatLng(latitude, longitude)
+          );
+        }
+      },
+      (err) => {
+        alert("위치 정보를 가져올 수 없습니다: " + err.message);
+      },
+      { enableHighAccuracy: true, timeout: 5000, maximumAge: 0 }
+    );
+  };
+
   if (error) {
     return (
       <div className={styles.pageWrapper}>
@@ -407,7 +460,12 @@ export default function MapPage() {
               className={`${styles.typeBtn} ${
                 mode === "elder" ? styles.active : ""
               }`}
-              onClick={() => setMode("elder")}
+              onClick={() => {
+                setMode("elder");
+                if (selectedLocations.start && selectedLocations.end) {
+                  handleSearch();
+                }
+              }}
             >
               노약자/임산부
             </button>
@@ -415,7 +473,12 @@ export default function MapPage() {
               className={`${styles.typeBtn} ${
                 mode === "wheel" ? styles.active : ""
               }`}
-              onClick={() => setMode("wheel")}
+              onClick={() => {
+                setMode("wheel");
+                if (selectedLocations.start && selectedLocations.end) {
+                  handleSearch();
+                }
+              }}
             >
               휠체어/유모차
             </button>
@@ -533,7 +596,10 @@ export default function MapPage() {
           >
             <img src="/images/icon-report2.png" alt="신고" />
           </button>
-          <button className={styles.fixedBtn}>
+          <button
+            className={styles.fixedBtn}
+            onClick={handleMoveToCurrentLocation}
+          >
             <img src="/images/icon-location.png" alt="위치" />
           </button>
         </div>
@@ -563,24 +629,15 @@ export default function MapPage() {
         >
           <div
             style={{
-              display: "flex",
-              justifyContent: "center",
-              alignItems: "center",
-              marginBottom: 8,
+              width: 40,
+              height: 5,
+              borderRadius: 3,
+              background: "#ccc",
+              margin: "8px auto 16px auto",
+              cursor: "pointer",
             }}
-          >
-            <div
-              style={{
-                width: 40,
-                height: 5,
-                borderRadius: 3,
-                background: "#ccc",
-                margin: "8px 0",
-                cursor: "pointer",
-              }}
-              onClick={() => setShowRoutePanel(!showRoutePanel)}
-            />
-          </div>
+            onClick={() => setShowRoutePanel(false)}
+          />
           <div
             style={{
               textAlign: "center",
@@ -591,69 +648,6 @@ export default function MapPage() {
           >
             경로 안내
           </div>
-          {/* 경로 선택 UI (가로 스크롤, 스타일 개선, key 경고 해결) */}
-          {showRoutePanel && routes.length > 0 && (
-            <div
-              style={{
-                display: "flex",
-                flexDirection: "row",
-                overflowX: "auto",
-                gap: 8,
-                marginBottom: 10,
-                padding: "4px 0 8px 0",
-                scrollbarWidth: "thin",
-                WebkitOverflowScrolling: "touch",
-              }}
-            >
-              {routes.map((route, idx) => (
-                <button
-                  key={`route-btn-${route.type}-${idx}`}
-                  onClick={() => {
-                    setSelectedRouteIdx(idx);
-                    // 지도에 경로 그리기
-                    if (route.type === "pedestrian") {
-                      drawPedestrianRoute(route.data);
-                    } else {
-                      drawTransitRoute(route.data);
-                    }
-                  }}
-                  style={{
-                    fontWeight: selectedRouteIdx === idx ? "bold" : "normal",
-                    background:
-                      selectedRouteIdx === idx ? "#ffe6a7" : "#f5f5f5",
-                    border:
-                      selectedRouteIdx === idx
-                        ? "2px solid #f5d492"
-                        : "1.5px solid #e0e0e0",
-                    borderRadius: 18,
-                    padding: "6px 10px",
-                    cursor: "pointer",
-                    fontSize: 13.5,
-                    minWidth: 90,
-                    maxWidth: 120,
-                    height: 34,
-                    whiteSpace: "nowrap",
-                    overflow: "hidden",
-                    textOverflow: "ellipsis",
-                    textAlign: "center",
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "center",
-                    boxShadow:
-                      selectedRouteIdx === idx
-                        ? "0 2px 8px rgba(0,0,0,0.07)"
-                        : "none",
-                    color: selectedRouteIdx === idx ? "#b97a00" : "#333",
-                    transition: "all 0.15s",
-                  }}
-                >
-                  {route.type === "pedestrian"
-                    ? "보행자 경로"
-                    : `대중교통경로 ${idx + 1}`}
-                </button>
-              ))}
-            </div>
-          )}
           <div style={{ position: "relative", minHeight: 0 }}>
             <ul
               style={{
@@ -663,18 +657,45 @@ export default function MapPage() {
                 paddingBottom: 64,
               }}
             >
-              {routes[selectedRouteIdx]?.instructions?.map((desc, idx) => (
-                <li
-                  key={idx}
-                  style={{
-                    padding: "8px 0",
-                    borderBottom: "1px solid #eee",
-                    fontSize: 15,
-                  }}
-                >
-                  {desc}
-                </li>
-              ))}
+              {(() => {
+                const route = routes[selectedRouteIdx]?.data;
+                if (!route) return null;
+                const items = [];
+                route.legs.forEach((leg, lidx) => {
+                  if (leg.mode === "WALK" && Array.isArray(leg.steps)) {
+                    leg.steps.forEach((step, sidx) => {
+                      items.push(
+                        <li
+                          key={`leg${lidx}-step${sidx}`}
+                          style={{
+                            padding: "8px 0",
+                            borderBottom: "1px solid #eee",
+                            fontSize: 15,
+                          }}
+                        >
+                          {step.description}
+                        </li>
+                      );
+                    });
+                  } else {
+                    // 대중교통 구간: 버스/지하철 등
+                    items.push(
+                      <li
+                        key={`leg${lidx}`}
+                        style={{
+                          padding: "8px 0",
+                          borderBottom: "1px solid #eee",
+                          fontSize: 15,
+                        }}
+                      >
+                        {leg.mode} {leg.name ? `(${leg.name})` : ""}{" "}
+                        {leg.distance ? `- ${leg.distance}m 이동` : ""}
+                      </li>
+                    );
+                  }
+                });
+                return items;
+              })()}
             </ul>
           </div>
         </div>
@@ -701,29 +722,6 @@ export default function MapPage() {
               경로 안내 보기
             </button>
           )}
-        {/* 경로 안내 닫기 버튼: 패널 외부, 모달 위쪽에 항상 위치 */}
-        {showRoutePanel && closeBtnTop !== null && (
-          <button
-            style={{
-              position: "absolute",
-              left: "50%",
-              top: closeBtnTop,
-              transform: "translateX(-50%)",
-              background: "#fffbe7",
-              border: "1.5px solid #f5d492",
-              borderRadius: 16,
-              padding: "8px 22px",
-              fontWeight: 600,
-              fontSize: 15,
-              boxShadow: "0 2px 8px rgba(0,0,0,0.07)",
-              cursor: "pointer",
-              zIndex: 100,
-            }}
-            onClick={() => setShowRoutePanel(false)}
-          >
-            경로 안내 닫기
-          </button>
-        )}
       </div>
 
       <nav className={styles.bottomNav}>
@@ -740,6 +738,14 @@ export default function MapPage() {
 
       {showReportModal && (
         <ReportModal onClose={() => setShowReportModal(false)} />
+      )}
+
+      {showRouteSelectModal && (
+        <RouteSelectModal
+          routes={routeOptions}
+          onSelect={handleRouteSelect}
+          onClose={() => setShowRouteSelectModal(false)}
+        />
       )}
     </div>
   );

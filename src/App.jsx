@@ -8,7 +8,9 @@ import FindInfoPage from "./components/FindInfoPage";
 import MyPage from "./components/MyPage";
 import ReportPage from "./components/ReportPage";
 import MapPage from "./components/MapPage";
+import AdminMainPage from "./components/AdminMainPage";
 import KakaoCallback from "./components/KakaoCallback";
+import GoogleCallback from "./components/GoogleCallback";
 
 export default function App() {
   return (
@@ -18,12 +20,13 @@ export default function App() {
       <Route path="/signup" element={<SignupPage />} />
       <Route path="/bookmark" element={<BookmarkPage />} />
       <Route path="/main" element={<MainPage />} />
+      <Route path="/admin" element={<AdminMainPage />} />
       <Route path="/map" element={<MapPage />} />
       <Route path="/findinfo" element={<FindInfoPage />} />
       <Route path="/mypage" element={<MyPage />} />
       <Route path="/report" element={<ReportPage />} />
       <Route path="/kakao-callback" element={<KakaoCallback />} />
-      {/* <Route path="/adminmainpage" element={<AdminMainPage />} /> */}
+      <Route path="/google-callback" element={<GoogleCallback />} />
     </Routes>
   );
 }

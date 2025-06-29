@@ -1,67 +1,51 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { Link } from "react-router-dom";
-import api from "../api/axios";
-import styles from "../css/AdminMainPage.module.css";
-
+import styles from "../css/MainPage.module.css";
+import ReportModal from "./ReportModal";
 export default function AdminMainPage() {
-  const [reports, setReports] = useState([]);
-  const [users, setUsers] = useState([]);
-
-  useEffect(() => {
-    async function fetchAdminData() {
-      try {
-        const [reportsRes, usersRes] = await Promise.all([
-          api.get("/admin/reports"),
-          api.get("/admin/users"),
-        ]);
-        setReports(reportsRes.data);
-        setUsers(usersRes.data);
-      } catch (err) {
-        console.error("관리자 데이터 로드 실패:", err);
-      }
-    }
-    fetchAdminData();
-  }, []);
-
+  const [showReportModal, setShowReportModal] = useState(false);
   return (
-    <div className={styles.container}>
-      <header className={styles.header}>관리자 대시보드</header>
-
-      <section className={styles.sectionGroup}>
-        <h2 className={styles.sectionTitle}>미처리 제보</h2>
-        <ul className={styles.reportList}>
-          {reports.map((report) => (
-            <li key={report.id} className={styles.reportCard}>
-              <Link to={`/report/${report.id}`} className={styles.reportLink}>
-                {report.title}
-              </Link>
-            </li>
-          ))}
-        </ul>
-      </section>
-
-      <section className={styles.sectionGroup}>
-        <h2 className={styles.sectionTitle}>회원 관리</h2>
-        <ul className={styles.userList}>
-          {users.map((user) => (
-            <li key={user.id} className={styles.userCard}>
-              {user.username} ({user.role})
-            </li>
-          ))}
-        </ul>
-      </section>
-
-      <nav className={styles.adminNav}>
-        <Link to="/main" className={styles.navLink}>
-          사용자 메인
-        </Link>
-        <Link to="/bookmark" className={styles.navLink}>
-          즐겨찾기
-        </Link>
-        <Link to="/map" className={styles.navLink}>
-          지도
-        </Link>
-      </nav>
-    </div>
+    <>
+      <main className={styles.main}>
+        <div className={styles.cardGrid}>
+          <Link to="/map" className={styles.card}>
+            <img
+              src="/images/icon-find.png"
+              alt="길찾기 아이콘"
+              className={styles.icon}
+            />
+            <span className={styles.label}>길찾기</span>
+          </Link>
+          <Link to="/report" className={styles.card}>
+            <img
+              src="/images/icon-report.png"
+              alt="제보관리 아이콘"
+              className={styles.icon}
+            />
+            <span className={styles.label}>제보관리</span>
+          </Link>
+          <Link to="/bookmark" className={styles.card}>
+            <img
+              src="/images/icon-star.png"
+              alt="즐겨찾기 아이콘"
+              className={styles.icon}
+            />
+            <span className={styles.label}>즐겨찾기</span>
+          </Link>
+          <Link to="/admin/members" className={styles.card}>
+            <img
+              src="/images/icon-user.png"
+              alt="회원 관리 아이콘"
+              className={styles.icon}
+            />
+            <span className={styles.label}>회원 관리</span>
+            <small className={styles.smallLabel}>문의/불편 접수</small>
+          </Link>
+        </div>
+      </main>
+      {showReportModal && (
+        <ReportModal onClose={() => setShowReportModal(false)} />
+      )}
+    </>
   );
 }

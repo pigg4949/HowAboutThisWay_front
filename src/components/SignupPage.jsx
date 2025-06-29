@@ -1,6 +1,7 @@
-import React, { useState } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import api from "../api/axios";
+import { DuplCheck, registerUser, formatPhoneNumber } from "../api/member";
+import { sendVerificationCode, verifyCode } from "../api/auth";
 import styles from "../css/SignupPage.module.css";
 
 const termsData = {
@@ -52,6 +53,10 @@ const termsData = {
 };
 
 export default function SignupPage() {
+  const navigate = useNavigate();
+  const timerRef = useRef(null);
+
+  // 회원정보
   const [userId, setUserId] = useState("");
   const [ssnFront, setSsnFront] = useState("");
   const [ssnBack, setSsnBack] = useState("");
@@ -60,41 +65,125 @@ export default function SignupPage() {
   const [confirm, setConfirm] = useState("");
   const [phone, setPhone] = useState("");
   const [code, setCode] = useState("");
+
+  // 약관 동의
   const [agreeService, setAgreeService] = useState(false);
   const [agreeLocation, setAgreeLocation] = useState(false);
-  const [modalTerm, setModalTerm] = useState(null);
-  const navigate = useNavigate();
 
+  // 모달
+  const [modalTerm, setModalTerm] = useState(null);
+
+  // 아이디 중복확인 상태: null=미확인, true=사용가능, false=중복
+  const [isUserIdAvailable, setIsUserIdAvailable] = useState(null);
+
+  // 휴대폰 인증
+  const [codeSent, setCodeSent] = useState(false);
+  const [verified, setVerified] = useState(false);
+  const [serverCode, setServerCode] = useState("");
+  const [timeLeft, setTimeLeft] = useState(0);
+
+  // 아이디 입력 변경
+  const handleUserIdChange = (e) => {
+    setUserId(e.target.value);
+    setIsUserIdAvailable(null);
+  };
+
+  // 중복확인
   const handleCheckDup = async () => {
+    if (!userId) {
+      alert("아이디를 입력해주세요.");
+      return;
+    }
     try {
-      await api.get(`/check-dup?userId=${userId}`);
-      alert("사용 가능한 아이디입니다.");
-    } catch {
-      alert("이미 사용 중인 아이디입니다.");
+      const response = await DuplCheck(userId);
+      // 200 응답: 사용 가능한 아이디
+      alert("✅ 사용 가능한 아이디입니다.");
+      setIsUserIdAvailable(true);
+    } catch (err) {
+      // 409 응답: 이미 사용 중인 아이디
+      if (err.response && err.response.status === 409) {
+        alert("❌ 이미 사용 중인 아이디입니다.");
+        setIsUserIdAvailable(false);
+      } else {
+        // 기타 에러
+        console.error("중복 확인 오류:", err.response || err);
+        alert("중복 확인 중 오류가 발생했습니다.");
+        setIsUserIdAvailable(false);
+      }
     }
   };
 
+  // 인증번호 발송
   const handleVerifyCode = async () => {
+    if (!phone) {
+      alert("휴대폰 번호를 입력해주세요.");
+      return;
+    }
     try {
-      await api.post("/verify-code", { phone });
+      const response = await sendVerificationCode(phone);
       alert("인증번호가 발송되었습니다.");
-    } catch {
+      setServerCode(response.code);
+      setCodeSent(true);
+      setTimeLeft(180);
+      startTimer();
+    } catch (err) {
+      console.error(err);
       alert("인증번호 발송 실패");
     }
   };
 
+  // 타이머 시작
+  const startTimer = () => {
+    clearInterval(timerRef.current);
+    timerRef.current = setInterval(() => {
+      setTimeLeft((prev) => {
+        if (prev <= 1) {
+          clearInterval(timerRef.current);
+          setCodeSent(false);
+          alert("⏰ 인증 시간이 만료되었습니다. 다시 시도해주세요.");
+          return 0;
+        }
+        return prev - 1;
+      });
+    }, 1000);
+  };
+
+  // 인증번호 확인
+  const handleCodeConfirm = () => {
+    const isValid = verifyCode(code, serverCode);
+    if (isValid) {
+      clearInterval(timerRef.current);
+      alert("✅ 인증 성공");
+      setVerified(true);
+    } else {
+      alert("❌ 인증 실패 또는 만료되었습니다.");
+      setVerified(false);
+    }
+  };
+
+  // 폼 제출
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    if (isUserIdAvailable !== true) {
+      alert("아이디 중복 확인을 완료해주세요.");
+      return;
+    }
     if (password !== confirm) {
       alert("비밀번호가 일치하지 않습니다.");
+      return;
+    }
+    if (!verified) {
+      alert("휴대폰 인증을 완료해주세요.");
       return;
     }
     if (!agreeService || !agreeLocation) {
       alert("약관에 모두 동의해주세요.");
       return;
     }
+
     try {
-      await api.post("/users/register", {
+      await registerUser({
         userId,
         ssn1: ssnFront,
         ssn2: ssnBack,
@@ -104,160 +193,213 @@ export default function SignupPage() {
         agreeService,
         agreeLocation,
       });
+      alert("회원가입이 완료되었습니다.");
       navigate("/");
     } catch (err) {
-      alert("회원가입 실패: " + err.message);
+      console.error(err);
+      alert("회원가입 실패: " + (err.response?.data?.message || err.message));
     }
   };
 
-  return (
-    <>
-      <main className={styles.mainContent}>
-        <header className={styles.header}>
-          <Link to="/" className={styles.backButton}>
-            ←
-          </Link>
-          <h2 className={styles.pageTitle}>회원가입</h2>
-        </header>
+  // cleanup
+  useEffect(() => {
+    return () => {
+      if (timerRef.current) {
+        clearInterval(timerRef.current);
+      }
+    };
+  }, []);
 
-        <form onSubmit={handleSubmit} className={styles.signupForm}>
+  return (
+    <div className={styles.pageWrapper}>
+      <header className={styles.headerBar}>
+        <Link to="/" className={styles.backButton}>
+          ←
+        </Link>
+        <span className={styles.headerTitle}>회원가입</span>
+        <span className={styles.headerRight}></span>
+      </header>
+
+      <main className={styles.mainContent}>
+        <form onSubmit={handleSubmit}>
           {/* 아이디 */}
-          <label htmlFor="userId">아이디</label>
-          <div className={styles.inputWithButton}>
-            <input
-              id="userId"
-              type="text"
-              value={userId}
-              onChange={(e) => setUserId(e.target.value)}
-              placeholder="아이디를 입력해주세요"
-              required
-            />
-            <button
-              type="button"
-              className={styles.btnInline}
-              onClick={handleCheckDup}
-            >
-              중복 확인
-            </button>
+          <div className={styles.formGroup}>
+            <label htmlFor="userId">아이디</label>
+            <div className={styles.inputWithButton}>
+              <input
+                id="userId"
+                type="text"
+                value={userId}
+                onChange={handleUserIdChange}
+                placeholder="아이디를 입력하세요"
+                required
+              />
+              <button
+                type="button"
+                onClick={handleCheckDup}
+                className={styles.btnInline}
+              >
+                중복확인
+              </button>
+            </div>
           </div>
 
           {/* 주민등록번호 */}
-          <label>주민등록번호</label>
-          <div className={styles.ssnGroup}>
-            <input
-              type="text"
-              value={ssnFront}
-              onChange={(e) => setSsnFront(e.target.value)}
-              placeholder="주민번호 앞자리"
-              maxLength={6}
-              required
-            />
-            <input
-              type="password"
-              value={ssnBack}
-              onChange={(e) => setSsnBack(e.target.value)}
-              placeholder="주민번호 뒷자리"
-              maxLength={7}
-              required
-            />
+          <div className={styles.formGroup}>
+            <label>주민등록번호</label>
+            <div className={styles.ssnInput}>
+              <input
+                type="text"
+                value={ssnFront}
+                onChange={(e) => setSsnFront(e.target.value.slice(0, 6))}
+                placeholder="앞 6자리"
+                maxLength={6}
+                required
+              />
+              <span>-</span>
+              <input
+                type="password"
+                value={ssnBack}
+                onChange={(e) => setSsnBack(e.target.value.slice(0, 1))}
+                placeholder="뒤 1자리"
+                maxLength={1}
+                required
+              />
+              <span>******</span>
+            </div>
           </div>
 
           {/* 이름 */}
-          <label htmlFor="name">이름</label>
-          <input
-            id="name"
-            type="text"
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-            placeholder="성함을 입력해주세요"
-            required
-          />
-
-          {/* 비밀번호 */}
-          <label htmlFor="password">비밀번호</label>
-          <input
-            id="password"
-            type="password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            placeholder="비밀번호를 입력해주세요"
-            required
-          />
-
-          {/* 비밀번호 확인 */}
-          <label htmlFor="confirm">비밀번호 확인</label>
-          <input
-            id="confirm"
-            type="password"
-            value={confirm}
-            onChange={(e) => setConfirm(e.target.value)}
-            placeholder="비밀번호를 한번 더 입력해주세요"
-            required
-          />
-
-          {/* 휴대폰 인증 */}
-          <label>휴대폰 번호 인증</label>
-          <div className={styles.inputWithButton}>
+          <div className={styles.formGroup}>
+            <label htmlFor="name">이름</label>
             <input
-              id="phone"
-              type="tel"
-              value={phone}
-              onChange={(e) => setPhone(e.target.value)}
-              placeholder="휴대폰 번호 입력"
+              id="name"
+              type="text"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              placeholder="이름을 입력하세요"
               required
             />
-            <button
-              type="button"
-              className={styles.btnInline}
-              onClick={handleVerifyCode}
-            >
-              전송
-            </button>
           </div>
 
-          {/* 인증번호 입력 */}
-          <div className={styles.inputWithButton}>
+          {/* 비밀번호 */}
+          <div className={styles.formGroup}>
+            <label htmlFor="password">비밀번호</label>
             <input
-              id="code"
-              type="text"
-              value={code}
-              onChange={(e) => setCode(e.target.value)}
-              placeholder="인증번호 입력"
+              id="password"
+              type="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              placeholder="비밀번호를 입력하세요"
               required
             />
-            <button type="button" className={styles.btnInline}>
-              확인
-            </button>
+          </div>
+
+          {/* 비밀번호 확인 */}
+          <div className={styles.formGroup}>
+            <label htmlFor="confirm">비밀번호 확인</label>
+            <input
+              id="confirm"
+              type="password"
+              value={confirm}
+              onChange={(e) => setConfirm(e.target.value)}
+              placeholder="비밀번호를 다시 입력하세요"
+              required
+            />
+            {confirm && password !== confirm && (
+              <span className={styles.errorText}>
+                비밀번호가 일치하지 않습니다.
+              </span>
+            )}
+          </div>
+
+          {/* 휴대폰 인증 */}
+          <div className={styles.formGroup}>
+            <label>휴대폰 인증</label>
+            <div className={styles.phoneInput}>
+              <input
+                type="tel"
+                value={formatPhoneNumber(phone)}
+                onChange={(e) =>
+                  setPhone(e.target.value.replace(/[^0-9]/g, "").slice(0, 11))
+                }
+                placeholder="휴대폰 번호"
+                required
+              />
+              <button
+                type="button"
+                onClick={handleVerifyCode}
+                className={styles.verifyButton}
+                disabled={codeSent}
+              >
+                인증번호 발송
+              </button>
+            </div>
+            {codeSent && (
+              <div className={styles.codeInput}>
+                <input
+                  type="text"
+                  value={code}
+                  onChange={(e) => setCode(e.target.value)}
+                  placeholder="인증번호 6자리"
+                  maxLength={6}
+                />
+                <button
+                  type="button"
+                  onClick={handleCodeConfirm}
+                  className={styles.confirmButton}
+                >
+                  확인
+                </button>
+                <span className={styles.timer}>
+                  {Math.floor(timeLeft / 60)}:
+                  {(timeLeft % 60).toString().padStart(2, "0")}
+                </span>
+              </div>
+            )}
+            {verified && (
+              <span className={styles.successText}>
+                ✅ 인증이 완료되었습니다.
+              </span>
+            )}
           </div>
 
           {/* 약관 동의 */}
-          <div className={styles.termsGroup}>
-            <label>
-              <input
-                type="checkbox"
-                checked={agreeService}
-                onChange={(e) => setAgreeService(e.target.checked)}
-              />
-              이용 약관 동의(필수) |
-              <span onClick={() => setModalTerm("service")}>약관 보기</span>
-            </label>
-            <label>
-              <input
-                type="checkbox"
-                checked={agreeLocation}
-                onChange={(e) => setAgreeLocation(e.target.checked)}
-              />
-              위치 기반 서비스 이용 동의(필수) |
-              <span onClick={() => setModalTerm("location")}>약관 보기</span>
-            </label>
+          <div className={styles.formGroup}>
+            <label>약관 동의</label>
+            <div className={styles.termsContainer}>
+              <label className={styles.checkboxLabel}>
+                <input
+                  type="checkbox"
+                  checked={agreeService}
+                  onChange={(e) => setAgreeService(e.target.checked)}
+                />
+                <span
+                  onClick={() => setModalTerm("service")}
+                  className={styles.termLink}
+                >
+                  {termsData.service.title} (필수)
+                </span>
+              </label>
+              <label className={styles.checkboxLabel}>
+                <input
+                  type="checkbox"
+                  checked={agreeLocation}
+                  onChange={(e) => setAgreeLocation(e.target.checked)}
+                />
+                <span
+                  onClick={() => setModalTerm("location")}
+                  className={styles.termLink}
+                >
+                  {termsData.location.title} (필수)
+                </span>
+              </label>
+            </div>
           </div>
 
-          {/* 회원가입 버튼 */}
-          <div className={styles.formButtons}>
-            <button type="submit" className={styles.buttonPrimary}>
-              회원가입
-            </button>
-          </div>
+          <button type="submit" className={styles.submitButton}>
+            회원가입
+          </button>
         </form>
       </main>
 
@@ -269,21 +411,19 @@ export default function SignupPage() {
             onClick={(e) => e.stopPropagation()}
           >
             <button
-              className={styles.closeButton}
+              className={styles.modalClose}
               onClick={() => setModalTerm(null)}
             >
               ×
             </button>
-            <h3 className={styles.modalTitle}>{termsData[modalTerm].title}</h3>
+            <h2>{termsData[modalTerm].title}</h2>
             <div
-              className={styles.modalText}
-              dangerouslySetInnerHTML={{
-                __html: termsData[modalTerm].content,
-              }}
+              className={styles.termContent}
+              dangerouslySetInnerHTML={{ __html: termsData[modalTerm].content }}
             />
           </div>
         </div>
       )}
-    </>
+    </div>
   );
 }
