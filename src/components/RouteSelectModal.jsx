@@ -17,6 +17,44 @@ function getTotalWalkTime(legs) {
       .reduce((sum, leg) => sum + (leg.sectionTime || 0), 0) || 0
   );
 }
+
+// 교통수단 이용 횟수 계산 함수 추가
+function getTransportCounts(legs) {
+  const counts = {
+    bus: 0,
+    subway: 0,
+  };
+
+  legs?.forEach((leg) => {
+    if (leg.mode === "BUS") {
+      counts.bus++;
+    } else if (leg.mode === "SUBWAY") {
+      counts.subway++;
+    }
+  });
+
+  return counts;
+}
+
+// 교통수단 정보 텍스트 생성 함수 추가
+function getTransportText(transportCounts) {
+  const { bus, subway } = transportCounts;
+
+  if (bus === 0 && subway === 0) {
+    return "도보";
+  }
+
+  const parts = [];
+  if (bus > 0) {
+    parts.push(`버스${bus}`);
+  }
+  if (subway > 0) {
+    parts.push(`지하철${subway}`);
+  }
+
+  return parts.join(" ");
+}
+
 function formatTime(sec) {
   if (!sec && sec !== 0) return "-";
   const min = Math.round(sec / 60);
@@ -119,6 +157,8 @@ export default function RouteSelectModal({
             const totalWalkDistance = getTotalWalkDistance(data.legs);
             const totalWalkTime = getTotalWalkTime(data.legs);
             const totalTime = data.totalTime;
+            const transportCounts = getTransportCounts(data.legs);
+            const transportText = getTransportText(transportCounts);
             return (
               <div
                 key={idx}
@@ -128,6 +168,19 @@ export default function RouteSelectModal({
                   padding: 14,
                   marginBottom: 12,
                   background: "#faf9f6",
+                  cursor: "pointer",
+                  transition: "all 0.2s ease",
+                }}
+                onClick={() => onSelect(route, idx)}
+                onMouseEnter={(e) => {
+                  e.target.style.background = "#f0f0f0";
+                  e.target.style.transform = "translateY(-1px)";
+                  e.target.style.boxShadow = "0 2px 8px rgba(0,0,0,0.1)";
+                }}
+                onMouseLeave={(e) => {
+                  e.target.style.background = "#faf9f6";
+                  e.target.style.transform = "translateY(0)";
+                  e.target.style.boxShadow = "none";
                 }}
               >
                 <div style={{ fontWeight: 600, marginBottom: 6 }}>
@@ -141,20 +194,9 @@ export default function RouteSelectModal({
                   총 걷는 거리: {formatDistance(totalWalkDistance)} / 걷는 시간:{" "}
                   {formatTime(totalWalkTime)}
                 </div>
-                <button
-                  style={{
-                    marginTop: 8,
-                    padding: "6px 18px",
-                    borderRadius: 8,
-                    background: "#ffe6a7",
-                    border: "none",
-                    fontWeight: 600,
-                    cursor: "pointer",
-                  }}
-                  onClick={() => onSelect(route, idx)}
-                >
-                  이 경로 선택
-                </button>
+                <div style={{ fontSize: 14, color: "#666", marginBottom: 0 }}>
+                  이용 교통수단: <b>{transportText}</b>
+                </div>
               </div>
             );
           })}

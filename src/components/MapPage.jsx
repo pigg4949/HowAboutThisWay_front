@@ -612,6 +612,29 @@ export default function MapPage() {
       </header>
 
       <div className={styles.mapArea}>
+        {/* 경로 재선택 버튼 - 경로 안내 패널 바로 위 중앙 */}
+        {showRoutePanel && (
+          <button
+            style={{
+              position: "absolute",
+              left: "50%",
+              bottom: "45vh",
+              transform: "translateX(-50%)",
+              zIndex: 50,
+              background: "#ffe6a7",
+              border: "1px solid #f5d492",
+              borderRadius: 8,
+              padding: "6px 22px",
+              fontWeight: 600,
+              fontSize: 15,
+              cursor: "pointer",
+              boxShadow: "0 1px 4px rgba(0,0,0,0.06)",
+            }}
+            onClick={() => setShowRouteSelectModal(true)}
+          >
+            경로 재선택
+          </button>
+        )}
         <div ref={mapRef} className={styles.realMap} />
         <div className={styles.mapFixedBtns}>
           <button className={styles.fixedBtn}>
@@ -654,28 +677,6 @@ export default function MapPage() {
             pointerEvents: showRoutePanel ? "auto" : "none",
           }}
         >
-          {/* 경로 재선택 버튼 */}
-          {showRoutePanel && (
-            <button
-              style={{
-                position: "absolute",
-                top: 16,
-                right: 20,
-                zIndex: 40,
-                background: "#ffe6a7",
-                border: "1px solid #f5d492",
-                borderRadius: 8,
-                padding: "4px 14px",
-                fontWeight: 500,
-                fontSize: 13,
-                cursor: "pointer",
-                boxShadow: "0 1px 4px rgba(0,0,0,0.06)",
-              }}
-              onClick={() => setShowRouteSelectModal(true)}
-            >
-              경로 재선택
-            </button>
-          )}
           <div
             style={{
               width: 40,
