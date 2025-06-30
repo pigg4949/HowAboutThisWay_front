@@ -347,6 +347,10 @@ export default function MapPage() {
     // 안내문 초기화 및 로딩 시작
     setInstructions([]);
     setInstructionsLoading(true);
+
+    // 폴리라인 그리기
+    drawTransitRoute(route.data);
+
     // 비동기 안내문 요청
     try {
       const processData = {
@@ -557,9 +561,9 @@ export default function MapPage() {
 
   // type별 한글명/아이콘 매핑 (임시)
   const FACILITY_TYPES = [
-    { type: 1, label: "엘리베이터", icon: "/markers/icon-pin.png" },
+    { type: 3, label: "엘리베이터", icon: "/markers/icon-pin.png" },
     { type: 2, label: "장애인화장실", icon: "/markers/icon-pin.png" },
-    { type: 3, label: "충전소", icon: "/markers/icon-ev.png" },
+    { type: 1, label: "충전소", icon: "/markers/icon-ev.png" },
     { type: 4, label: "에스컬레이터", icon: "/markers/icon-pin.png" },
   ];
 
@@ -799,17 +803,17 @@ export default function MapPage() {
             style={{
               position: "absolute",
               left: "50%",
-              bottom: "45vh",
+              bottom: "41vh",
               transform: "translateX(-50%)",
               zIndex: 50,
-              background: "#ffe6a7",
-              border: "1px solid #f5d492",
-              borderRadius: 8,
-              padding: "6px 22px",
+              background: "#FFFBE7",
+              border: "1.5px solid #F5D492",
+              borderRadius: 16,
+              padding: "8px 22px",
               fontWeight: 600,
               fontSize: 15,
+              boxShadow: "0 2px 8px rgba(0,0,0,0.07)",
               cursor: "pointer",
-              boxShadow: "0 1px 4px rgba(0,0,0,0.06)",
             }}
             onClick={() => setShowRouteSelectModal(true)}
           >
@@ -900,7 +904,7 @@ export default function MapPage() {
             left: 0,
             right: 0,
             bottom: 0,
-            zIndex: 30,
+            zIndex: 201,
             transition:
               "transform 0.35s cubic-bezier(.4,1.3,.5,1), height 0.35s cubic-bezier(.4,1.3,.5,1), padding 0.2s",
             transform: showRoutePanel ? "translateY(0%)" : "translateY(100%)",
