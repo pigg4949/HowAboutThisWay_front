@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
+    />
+    <title>Vite + React</title>
+    <script>
+      function initTmap() {
+        window.tmapReady = true;
+      }
+    </script>
+    <script
+      src="https://apis.openapi.sk.com/tmap/jsv2?appKey=YyCapWQIR2yXU3PbKBa46SBDA7ua2xV6Abkj1SQd"
+      onload="initTmap()"
+    ></script>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.jsx"></script>
+  </body>
+</html>

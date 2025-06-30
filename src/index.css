@@ -1,0 +1,123 @@
+/* 1) 색상 변수 선언 */
+:root {
+  --backgroundColor: #f5f0e3;
+  --cardBackground: #ffffff;
+  --primaryColor: #f5d492;
+  --primaryTextColor: #333333;
+  --textColor: #333333;
+  --placeholderColor: #999999;
+  --borderRadius: 12px;
+}
+
+/* 2) 전체 화면 중앙 컨테이너 */
+html,
+body {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  height: 100%;
+  background-color: var(--backgroundColor);
+}
+
+/* 3) 모바일 뷰포트 고정 및 공통 배경 */
+#root {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: center;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: "Segoe UI", sans-serif;
+  color: var(--textColor);
+  background-color: var(--backgroundColor);
+}
+
+/* 4) 기본 폼 스타일 */
+form {
+  width: 100%;
+}
+form label {
+  display: block;
+  margin-bottom: 8px;
+  font-size: 14px;
+}
+form input,
+form select,
+form textarea {
+  width: 100%;
+  padding: 12px 16px;
+  margin-bottom: 20px;
+  border: none;
+  border-radius: var(--borderRadius);
+  background-color: var(--cardBackground);
+  font-size: 16px;
+  color: var(--textColor);
+  box-sizing: border-box;
+}
+form input::placeholder,
+form textarea::placeholder {
+  color: var(--placeholderColor);
+}
+
+/* 5) 버튼 그룹 (div.buttonGroup) */
+.buttonGroup {
+  display: flex;
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+/* 6) 버튼 스타일 (JSX에서 사용하는 클래스명으로) */
+.btnPrimary,
+.btnMain {
+  flex: 1;
+  padding: 14px 0;
+  font-size: 16px;
+  border: none;
+  border-radius: var(--borderRadius);
+  cursor: pointer;
+  background-color: var(--primaryColor);
+  color: var(--primaryTextColor);
+}
+.btnSecondary,
+.btnSub {
+  flex: 1;
+  padding: 14px 0;
+  font-size: 16px;
+  border: none;
+  border-radius: var(--borderRadius);
+  cursor: pointer;
+  background-color: var(--cardBackground);
+  color: var(--textColor);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+.btnDelete {
+  width: 100%;
+  padding: 14px 0;
+  font-size: 16px;
+  border: none;
+  border-radius: var(--borderRadius);
+  cursor: pointer;
+  background-color: #ff4d4f;
+  color: #fff;
+  margin-top: 16px;
+}
+
+/* 7) 아이디/비밀번호 찾기 링크 */
+.findInfoLink {
+  display: block;
+  width: 100%;
+  text-align: center;
+  font-size: 14px;
+  color: var(--textColor);
+  text-decoration: none;
+}
+
+/* 8) 공통 유틸 */
+.hidden {
+  display: none !important;
+}
+.text-center {
+  text-align: center;
+}
