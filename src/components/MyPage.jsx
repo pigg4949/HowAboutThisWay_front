@@ -102,36 +102,17 @@ export default function MyPage() {
   return (
     <>
       <header className={styles.mypageHeader}>
-        <div
-          style={{
-            display: "flex",
-            alignItems: "center",
-            width: "100%",
-            position: "relative",
-          }}
-        >
+        <div className={styles.mypageHeaderRow}>
           <img
             src="/images/HATWlogo.png"
             alt="HATW 로고"
-            style={{
-              height: 32,
-              width: "auto",
-              display: "block",
-              position: "absolute",
-              left: 0,
-              top: "50%",
-              transform: "translateY(-50%)",
-              cursor: "pointer",
-            }}
+            className={styles.mypageLogo}
             onClick={() => {
               const isAdmin = localStorage.getItem("isAdmin") === "1";
               navigate(isAdmin ? "/admin" : "/main");
             }}
           />
-          <h2
-            className={styles.pageTitle}
-            style={{ margin: "0 auto", display: "block", textAlign: "center" }}
-          >
+          <h2 className={`${styles.pageTitle} ${styles.mypageTitle}`}>
             내 정보
           </h2>
         </div>
@@ -182,31 +163,13 @@ export default function MyPage() {
               문의 내역
             </button>
           </div>
-          <ul
-            style={{
-              listStyle: "none",
-              padding: 0,
-              margin: 0,
-              height: 132,
-              overflow: "hidden",
-              position: "relative",
-            }}
-          >
+          <ul className={styles.historyList}>
             {(() => {
               const list =
                 activeTab === "report" ? recentReports : recentInquiries;
               if (list.length === 0) {
                 return (
-                  <li
-                    className={styles.emptyMsg}
-                    style={{
-                      textAlign: "center",
-                      color: "#bbb",
-                      fontSize: 15,
-                      lineHeight: "44px",
-                      height: 132,
-                    }}
-                  >
+                  <li className={styles.historyEmpty}>
                     작성한 내역이 없습니다.
                   </li>
                 );
@@ -229,12 +192,11 @@ export default function MyPage() {
                     }}
                   ></span>
                   <span
-                    className={styles.historyContent}
-                    style={{ flex: 1, marginRight: 8 }}
+                    className={`${styles.historyContent} ${styles.historyContentFlex}`}
                   >
                     {activeTab === "report" ? item.comment : item.content}
                   </span>
-                  <span style={{ color: "#888", fontSize: 13 }}>
+                  <span className={styles.historyDate}>
                     {(item.createdAt || "").slice(0, 10)}
                   </span>
                 </li>
@@ -244,11 +206,10 @@ export default function MyPage() {
                 items.push(
                   <li
                     key={"empty-" + items.length}
-                    className={styles.historyItem}
-                    style={{ opacity: 0 }}
+                    className={`${styles.historyItem} ${styles.historyItemInvisible}`}
                   >
                     <span className={styles.statusDot}></span>
-                    <span style={{ flex: 1, marginRight: 8 }}></span>
+                    <span className={styles.historyContentFlex}></span>
                     <span></span>
                   </li>
                 );
@@ -287,9 +248,8 @@ export default function MyPage() {
           onClick={() => setShowAllModal(false)}
         >
           <div
-            className={styles.modalContent}
+            className={`${styles.modalContent} ${styles.modalContentWide}`}
             onClick={(e) => e.stopPropagation()}
-            style={{ maxWidth: 380, minWidth: 280 }}
           >
             <button
               className={styles.modalClose}
@@ -297,16 +257,15 @@ export default function MyPage() {
             >
               ×
             </button>
-            <h2 style={{ textAlign: "center", marginBottom: 16 }}>
+            <h2 className={styles.modalTitleCenter}>
               {activeTab === "report" ? "제보 내역 전체" : "문의 내역 전체"}
             </h2>
-            <ul style={{ listStyle: "none", padding: 0, margin: 0 }}>
+            <ul className={styles.historyList}>
               {(activeTab === "report" ? allReports : allInquiries).map(
                 (item, idx) => (
                   <li
                     key={item.idx || idx}
-                    className={styles.historyItem}
-                    style={{ cursor: "pointer" }}
+                    className={`${styles.historyItem} ${styles.historyItemPointer}`}
                     onClick={() => {
                       setSelectedItem(item);
                       setShowDetailModal(true);
@@ -328,12 +287,11 @@ export default function MyPage() {
                       }}
                     ></span>
                     <span
-                      className={styles.historyContent}
-                      style={{ flex: 1, marginRight: 8 }}
+                      className={`${styles.historyContent} ${styles.historyContentFlex}`}
                     >
                       {activeTab === "report" ? item.comment : item.content}
                     </span>
-                    <span style={{ color: "#888", fontSize: 13 }}>
+                    <span className={styles.historyDate}>
                       {(item.createdAt || "").slice(0, 10)}
                     </span>
                   </li>

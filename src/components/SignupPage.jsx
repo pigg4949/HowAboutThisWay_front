@@ -217,12 +217,7 @@ export default function SignupPage() {
           <img
             src="/images/HATWlogo.png"
             alt="HATW 로고"
-            style={{
-              height: 32,
-              width: "auto",
-              display: "block",
-              cursor: "pointer",
-            }}
+            className={styles.headerLogoImg}
             onClick={() => navigate("/")}
           />
         </span>
@@ -233,7 +228,7 @@ export default function SignupPage() {
       <main className={styles.mainContent}>
         <form onSubmit={handleSubmit} className={styles.signupForm}>
           {/* 아이디 */}
-          <div style={{ marginBottom: 15 }}>
+          <div className={styles.marginBottom15}>
             <label htmlFor="userId">아이디</label>
             <div className={styles.inputWithButton}>
               <input
@@ -255,7 +250,7 @@ export default function SignupPage() {
           </div>
 
           {/* 주민등록번호 */}
-          <div style={{ marginBottom: 15 }}>
+          <div className={styles.marginBottom15}>
             <label>주민등록번호</label>
             <div className={styles.ssnGroup}>
               <input
@@ -277,14 +272,14 @@ export default function SignupPage() {
                 placeholder="뒤 1자리"
                 maxLength={7}
                 inputMode="numeric"
-                style={{ letterSpacing: "2px" }}
+                className={styles.letterSpacing2}
                 required
               />
             </div>
           </div>
 
           {/* 이름 */}
-          <div style={{ marginBottom: 15 }}>
+          <div className={styles.marginBottom15}>
             <label htmlFor="name">이름</label>
             <input
               id="name"
@@ -297,7 +292,7 @@ export default function SignupPage() {
           </div>
 
           {/* 비밀번호 */}
-          <div style={{ marginBottom: 15 }}>
+          <div className={styles.marginBottom15}>
             <label htmlFor="password">비밀번호</label>
             <input
               id="password"
@@ -310,7 +305,7 @@ export default function SignupPage() {
           </div>
 
           {/* 비밀번호 확인 */}
-          <div style={{ marginBottom: 15 }}>
+          <div className={styles.marginBottom15}>
             <label htmlFor="confirm">비밀번호 확인</label>
             <input
               id="confirm"
@@ -321,14 +316,14 @@ export default function SignupPage() {
               required
             />
             {confirm && password !== confirm && (
-              <span style={{ color: "red", fontSize: 12 }}>
+              <span className={styles.errorMsg}>
                 비밀번호가 일치하지 않습니다.
               </span>
             )}
           </div>
 
           {/* 휴대폰 인증 */}
-          <div style={{ marginBottom: 15 }}>
+          <div className={styles.marginBottom15}>
             <label>휴대폰 인증</label>
             <div className={styles.inputWithButton}>
               <input
@@ -372,14 +367,14 @@ export default function SignupPage() {
               </div>
             )}
             {verified && (
-              <span style={{ color: "green", fontSize: 12 }}>
+              <span className={styles.successMsg}>
                 ✅ 인증이 완료되었습니다.
               </span>
             )}
           </div>
 
           {/* 약관 동의 */}
-          <div style={{ marginBottom: 15 }}>
+          <div className={styles.marginBottom15}>
             <label>약관 동의</label>
             <div className={styles.termsGroup}>
               <label>
@@ -415,7 +410,7 @@ export default function SignupPage() {
       {modalTerm && (
         <div className={styles.modalOverlay} onClick={() => setModalTerm(null)}>
           <div
-            className={styles.modalContent}
+            className={`${styles.modalContent} ${styles.modalContentWide}`}
             onClick={(e) => e.stopPropagation()}
           >
             <button
@@ -424,7 +419,9 @@ export default function SignupPage() {
             >
               ×
             </button>
-            <h2>{termsData[modalTerm].title}</h2>
+            <h2 className={styles.modalTitleCenter}>
+              {termsData[modalTerm].title}
+            </h2>
             <div
               className={styles.termContent}
               dangerouslySetInnerHTML={{ __html: termsData[modalTerm].content }}

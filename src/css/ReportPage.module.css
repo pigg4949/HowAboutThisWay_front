@@ -259,3 +259,60 @@ app {
   background: #ede7dd;
   transition: 0.15s;
 }
+
+.headerLogoImg {
+  height: 32px;
+  width: auto;
+  display: block;
+  cursor: pointer;
+}
+
+.modalContentWide {
+  max-width: 380px;
+  min-width: 280px;
+}
+
+.modalTitleCenter {
+  text-align: center;
+  margin-bottom: 16px;
+}
+
+.modalBox {
+  border: 1px solid #bbb;
+  border-radius: 8px;
+  padding: 16px;
+  min-height: 80px;
+  margin-bottom: 16px;
+}
+
+.modalImageBtn {
+  color: #007bff;
+  background: none;
+  border: none;
+  cursor: pointer;
+  text-decoration: underline;
+  margin-bottom: 12px;
+}
+
+.modalActionRow {
+  display: flex;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.modalActionBtn {
+  flex: 1;
+  background: #8fd694;
+  color: #222;
+  border: none;
+  border-radius: 6px;
+  padding: 12px;
+  font-weight: 600;
+  font-size: 16px;
+  cursor: pointer;
+}
+
+.modalActionBtnReject {
+  background: #ff6b6b;
+  color: white;
+}

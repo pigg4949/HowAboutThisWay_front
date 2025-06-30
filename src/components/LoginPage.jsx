@@ -56,13 +56,7 @@ export default function LoginPage() {
         <img
           src="/images/HATWlogo.png"
           alt="HATW 로고"
-          style={{
-            width: "100%",
-            maxWidth: 200,
-            height: "auto",
-            display: "block",
-            margin: "0 auto",
-          }}
+          className={styles.logoImg}
         />
       </div>
 
@@ -88,52 +82,29 @@ export default function LoginPage() {
           />
 
           {/* 2x2 버튼 그리드로 모든 버튼 통일 */}
-          <div
-            style={{
-              display: "flex",
-              flexWrap: "wrap",
-              gap: 8,
-              width: "100%",
-              marginBottom: 8,
-            }}
-          >
-            <button
-              type="submit"
-              className="btnPrimary"
-              style={{ flex: "1 1 48%", minWidth: 0, height: 48 }}
-            >
+          <div className={styles.buttonGroup}>
+            <button type="submit" className={styles.buttonPrimary}>
               로그인
             </button>
-            <Link
-              to="/signup"
-              style={{
-                flex: "1 1 48%",
-                minWidth: 0,
-                height: 48,
-                display: "flex",
-                textDecoration: "none",
-              }}
-            >
-              <button
-                type="button"
-                className="btnSecondary"
-                style={{ width: "100%", height: 48 }}
-              >
-                회원가입
-              </button>
-            </Link>
             <button
               type="button"
-              className="btnSecondary"
-              style={{ flex: "1 1 48%", minWidth: 0, height: 48 }}
+              className={styles.buttonSecondary}
+              onClick={() => navigate("/signup")}
+            >
+              회원가입
+            </button>
+          </div>
+          <div className={styles.buttonGroup}>
+            <button
+              type="button"
+              className={styles.buttonSecondary}
               onClick={handleKakaoLogin}
             >
               카카오로 로그인
             </button>
             <button
               type="button"
-              className="btnSecondary"
-              style={{ flex: "1 1 48%", minWidth: 0, height: 48 }}
+              className={styles.buttonSecondary}
               onClick={handleGoogleLogin}
             >
               구글로 로그인
@@ -143,8 +114,7 @@ export default function LoginPage() {
 
         <Link
           to="/findInfo"
-          className={styles.findInfoLink}
-          style={{ marginTop: 16 }}
+          className={`${styles.findInfoLink} ${styles.findInfoLinkMargin}`}
         >
           아이디 / 비밀번호 찾기
         </Link>

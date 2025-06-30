@@ -1,4 +1,5 @@
 import React from "react";
+import styles from "../css/RouteSelectModal.module.css";
 
 function getTotalDistance(legs) {
   return legs?.reduce((sum, leg) => sum + (leg.distance || 0), 0) || 0;
@@ -107,40 +108,16 @@ export default function RouteSelectModal({
 }) {
   const sortedRoutes = sortRoutes(routes, sortOption);
   return (
-    <div
-      style={{
-        position: "fixed",
-        left: 0,
-        top: 0,
-        width: "100vw",
-        height: "100vh",
-        background: "rgba(0,0,0,0.35)",
-        zIndex: 10000,
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "center",
-      }}
-    >
-      <div
-        style={{
-          background: "#fff",
-          borderRadius: 12,
-          padding: 24,
-          minWidth: 320,
-          maxWidth: 400,
-          boxShadow: "0 4px 24px rgba(0,0,0,0.13)",
-        }}
-      >
-        <h3 style={{ marginBottom: 10, fontSize: 20, textAlign: "center" }}>
-          경로 선택
-        </h3>
+    <div className={styles.modalContainer}>
+      <div className={styles.modalContent}>
+        <h3 className={styles.modalTitle}>경로 선택</h3>
         {/* 정렬 옵션 셀렉트박스 */}
         {onSortChange && (
-          <div style={{ marginBottom: 16, textAlign: "right" }}>
+          <div className={styles.sortSelectContainer}>
             <select
               value={sortOption}
               onChange={(e) => onSortChange(e.target.value)}
-              style={{ fontSize: 14, padding: "4px 10px", borderRadius: 6 }}
+              className={styles.sortSelect}
             >
               <option value="default">최적(추천)</option>
               <option value="transfer">최소환승</option>
@@ -150,7 +127,7 @@ export default function RouteSelectModal({
             </select>
           </div>
         )}
-        <div style={{ maxHeight: 350, overflowY: "auto" }}>
+        <div className={styles.routeListContainer}>
           {sortedRoutes.map((route, idx) => {
             const data = route.data;
             const totalDistance = getTotalDistance(data.legs);
@@ -162,58 +139,32 @@ export default function RouteSelectModal({
             return (
               <div
                 key={idx}
-                style={{
-                  border: "1px solid #eee",
-                  borderRadius: 8,
-                  padding: 14,
-                  marginBottom: 12,
-                  background: "#faf9f6",
-                  cursor: "pointer",
-                  transition: "all 0.2s ease",
-                }}
+                className={styles.routeItem}
                 onClick={() => onSelect(route, idx)}
                 onMouseEnter={(e) => {
-                  e.target.style.background = "#f0f0f0";
-                  e.target.style.transform = "translateY(-1px)";
-                  e.target.style.boxShadow = "0 2px 8px rgba(0,0,0,0.1)";
+                  e.target.classList.add(styles.routeItemHover);
                 }}
                 onMouseLeave={(e) => {
-                  e.target.style.background = "#faf9f6";
-                  e.target.style.transform = "translateY(0)";
-                  e.target.style.boxShadow = "none";
+                  e.target.classList.remove(styles.routeItemHover);
                 }}
               >
-                <div style={{ fontWeight: 600, marginBottom: 6 }}>
-                  경로 {idx + 1}
-                </div>
-                <div style={{ fontSize: 15, marginBottom: 4 }}>
+                <div className={styles.routeIndex}>경로 {idx + 1}</div>
+                <div className={styles.routeInfo}>
                   총 거리: <b>{formatDistance(totalDistance)}</b> / 총 소요시간:{" "}
                   <b>{formatTime(totalTime)}</b>
                 </div>
-                <div style={{ fontSize: 14, color: "#666", marginBottom: 2 }}>
+                <div className={styles.routeInfo}>
                   총 걷는 거리: {formatDistance(totalWalkDistance)} / 걷는 시간:{" "}
                   {formatTime(totalWalkTime)}
                 </div>
-                <div style={{ fontSize: 14, color: "#666", marginBottom: 0 }}>
+                <div className={styles.routeInfo}>
                   이용 교통수단: <b>{transportText}</b>
                 </div>
               </div>
             );
           })}
         </div>
-        <button
-          style={{
-            marginTop: 10,
-            width: "100%",
-            padding: "8px 0",
-            borderRadius: 8,
-            background: "#eee",
-            border: "none",
-            fontWeight: 500,
-            cursor: "pointer",
-          }}
-          onClick={onClose}
-        >
+        <button className={styles.closeButton} onClick={onClose}>
           닫기
         </button>
       </div>

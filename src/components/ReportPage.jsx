@@ -75,12 +75,7 @@ export default function ReportPage() {
           <img
             src="/images/HATWlogo.png"
             alt="HATW 로고"
-            style={{
-              height: 32,
-              width: "auto",
-              display: "block",
-              cursor: "pointer",
-            }}
+            className={styles.headerLogoImg}
             onClick={() => {
               navigate(isAdmin ? "/admin" : "/main");
             }}
@@ -166,41 +161,20 @@ export default function ReportPage() {
       {/* 4) 상세 모달 */}
       {showModal && selectedReport && (
         <div className={styles.modalOverlay}>
-          <div
-            className={styles.modalContent}
-            style={{ maxWidth: 380, minWidth: 280 }}
-          >
+          <div className={`${styles.modalContent} ${styles.modalContentWide}`}>
             <button
               className={styles.modalClose}
               onClick={() => setShowModal(false)}
             >
               ×
             </button>
-            <h2 style={{ textAlign: "center", marginBottom: 16 }}>
-              불편 제보 관리
-            </h2>
-            <div
-              style={{
-                border: "1px solid #bbb",
-                borderRadius: 8,
-                padding: 16,
-                minHeight: 80,
-                marginBottom: 16,
-              }}
-            >
-              {selectedReport.comment}
-            </div>
+            <h2 className={styles.modalTitleCenter}>불편 제보 관리</h2>
+            <div className={styles.modalBox}>{selectedReport.comment}</div>
             {selectedReport.imageUrl && (
-              <div style={{ marginBottom: 12 }}>
+              <div>
                 <button
                   type="button"
-                  style={{
-                    color: "#007BFF",
-                    background: "none",
-                    border: "none",
-                    cursor: "pointer",
-                    textDecoration: "underline",
-                  }}
+                  className={styles.modalImageBtn}
                   onClick={() => {
                     setModalImageUrl(selectedReport.imageUrl);
                     setShowImageModal(true);
@@ -210,22 +184,12 @@ export default function ReportPage() {
                 </button>
               </div>
             )}
-            <div style={{ display: "flex", gap: 8, marginTop: 12 }}>
+            <div className={styles.modalActionRow}>
               <button
                 onClick={() =>
                   handleStatusChange(selectedReport.idx, "APPROVED")
                 }
-                style={{
-                  flex: 1,
-                  background: "#8FD694",
-                  color: "#222",
-                  border: "none",
-                  borderRadius: 6,
-                  padding: 12,
-                  fontWeight: 600,
-                  fontSize: 16,
-                  cursor: "pointer",
-                }}
+                className={styles.modalActionBtn}
               >
                 처리 완료
               </button>
@@ -233,17 +197,7 @@ export default function ReportPage() {
                 onClick={() =>
                   handleStatusChange(selectedReport.idx, "REJECTED")
                 }
-                style={{
-                  flex: 1,
-                  background: "#FF6B6B",
-                  color: "white",
-                  border: "none",
-                  borderRadius: 6,
-                  padding: 12,
-                  fontWeight: 600,
-                  fontSize: 16,
-                  cursor: "pointer",
-                }}
+                className={`${styles.modalActionBtn} ${styles.modalActionBtnReject}`}
               >
                 추가 검토
               </button>

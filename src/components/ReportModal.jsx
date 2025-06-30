@@ -152,74 +152,31 @@ export default function ReportModal({ onClose }) {
         <h2 className={styles.modalTitle}>통행 이용 불편 제보</h2>
 
         {/* 지도+마커를 감싸는 래퍼 */}
-        <div
-          style={{
-            position: "relative",
-            width: "100%",
-            height: "300px",
-            margin: "16px 0",
-          }}
-        >
+        <div className={styles.reportMapWrapper}>
           <div
             id="report_map"
             ref={mapRef}
-            className={styles.mapContainer}
-            style={{
-              width: "100%",
-              height: "300px",
-              pointerEvents: "auto",
-            }}
+            className={styles.reportMapContainer}
           />
           {/* 현재 위치로 이동 버튼 */}
           <button
             type="button"
             onClick={moveToCurrentLocation}
-            style={{
-              position: "absolute",
-              top: 12,
-              right: 12,
-              zIndex: 1100,
-              background: "#fff",
-              border: "1px solid #bbb",
-              borderRadius: 24,
-              width: 40,
-              height: 40,
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              boxShadow: "0 2px 8px rgba(0,0,0,0.08)",
-              cursor: "pointer",
-              padding: 0,
-            }}
+            className={styles.moveCurrentBtn}
             title="현재 위치로 이동"
           >
             <img
               src="/images/icon-location.png"
               alt="현재 위치"
-              style={{ width: 24, height: 24 }}
+              className={styles.moveCurrentBtnImg}
             />
           </button>
           {/* 중앙 고정 마커 (항상 map 위에 보임) */}
-          <div
-            style={{
-              position: "absolute",
-              top: "50%",
-              left: "50%",
-              transform: "translate(-50%, -100%)",
-              zIndex: 1000,
-              pointerEvents: "none",
-              width: 24,
-              height: 38,
-            }}
-          >
+          <div className={styles.centerMarker}>
             <img
               src="/markers/icon-pin.png"
               alt="위치 마커"
-              style={{
-                width: "36px",
-                height: "36px",
-                filter: "drop-shadow(0 2px 4px rgba(0,0,0,0.3))",
-              }}
+              className={styles.centerMarkerImg}
             />
           </div>
         </div>

@@ -59,8 +59,9 @@
 /* 5) 버튼 그룹 (index.css .buttonGroup) */
 .buttonGroup {
   display: flex;
-  gap: 8px;
+  gap: 12px;
   width: 100%;
+  margin-bottom: 12px;
 }
 .buttonGroup > button,
 .buttonGroup > a {
@@ -71,7 +72,9 @@
   display: flex;
 }
 .buttonGroup > button,
-.buttonGroup > a > button {
+.buttonGroup > a > button,
+.buttonPrimary,
+.buttonSecondary {
   width: 100%;
   height: 48px;
   padding: 0 16px;
@@ -80,15 +83,16 @@
   border: none;
   border-radius: var(--borderRadius);
   cursor: pointer;
-  display: inline-flex;
+  display: flex;
   align-items: center;
   justify-content: center;
+  box-sizing: border-box;
 }
-.buttonGroup > button.buttonPrimary {
+.buttonPrimary {
   background-color: var(--primaryColor);
   color: var(--primaryTextColor);
 }
-.buttonGroup > a > button.buttonSecondary {
+.buttonSecondary {
   background-color: var(--cardBackground);
   color: var(--textColor);
 }
@@ -136,4 +140,43 @@
   background: url("/images/background.jpg") no-repeat center top/cover;
   background-size: cover;
   position: relative;
+}
+
+.logoImg {
+  width: 100%;
+  max-width: 200px;
+  height: auto;
+  display: block;
+  margin: 0 auto;
+}
+
+.loginBtnGrid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  width: 100%;
+  margin-bottom: 8px;
+}
+
+.loginBtn {
+  flex: 1 1 48%;
+  min-width: 0;
+  height: 48px;
+}
+
+.loginBtnLink {
+  flex: 1 1 48%;
+  min-width: 0;
+  height: 48px;
+  display: flex;
+  text-decoration: none;
+}
+
+.loginBtnFull {
+  width: 100%;
+  height: 48px;
+}
+
+.findInfoLinkMargin {
+  margin-top: 16px;
 }

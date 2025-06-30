@@ -31,44 +31,28 @@ export default function InquiryModal({ onClose }) {
 
   return (
     <div className={styles.modalOverlay}>
-      <div
-        className={styles.modalContent}
-        style={{ maxWidth: 380, minWidth: 280 }}
-      >
+      <div className={`${styles.modalContent} ${styles.inquiryModalContent}`}>
         <button
-          className={styles.modalClose}
+          className={`${styles.modalClose} ${styles.inquiryModalClose}`}
           onClick={onClose}
-          style={{ color: "#222" }}
         >
           ×
         </button>
-        <h2
-          className={styles.modalTitle}
-          style={{ textAlign: "center", marginBottom: 16 }}
-        >
+        <h2 className={`${styles.modalTitle} ${styles.inquiryModalTitle}`}>
           문의하기
         </h2>
-        <div style={{ marginBottom: 18 }}>
+        <div className={styles.inquiryTextareaWrapper}>
           <textarea
             value={inquiry}
             onChange={(e) => setInquiry(e.target.value)}
             placeholder="문의 또는 불편 사항을 입력하세요."
-            style={{
-              width: "100%",
-              minHeight: 100,
-              padding: 12,
-              border: "1px solid #ddd",
-              borderRadius: 6,
-              resize: "vertical",
-              boxSizing: "border-box",
-            }}
+            className={styles.inquiryTextarea}
             disabled={loading}
           />
         </div>
         <button
           onClick={handleInquiry}
-          className={styles.buttonPrimary}
-          style={{ width: "100%", fontSize: 16, height: 96 }}
+          className={styles.inquirySendBtn}
           disabled={loading}
         >
           {loading ? "전송 중..." : "전송"}

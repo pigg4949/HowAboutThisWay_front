@@ -640,7 +640,7 @@ export default function MapPage() {
   if (error) {
     return (
       <div className={styles.pageWrapper}>
-        <div style={{ padding: "20px", textAlign: "center" }}>
+        <div className={styles.mapErrorMessage}>
           <p>지도 로드 오류: {error}</p>
         </div>
       </div>
@@ -650,21 +650,8 @@ export default function MapPage() {
   return (
     <div className={styles.pageWrapper}>
       {loading && (
-        <div
-          style={{
-            position: "fixed",
-            top: 0,
-            left: 0,
-            width: "100vw",
-            height: "100vh",
-            background: "rgba(255,255,255,0.6)",
-            zIndex: 9999,
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-          }}
-        >
-          <BouncingDots style={{ transform: "scale(2)" }} />
+        <div className={styles.loadingOverlay}>
+          <BouncingDots className={styles.loadingDots} />
         </div>
       )}
       <header className={styles.mapHeader}>
@@ -699,7 +686,7 @@ export default function MapPage() {
             </button>
           </div>
           <div className={styles.inputArea}>
-            <div className={styles.inputRow} style={{ position: "relative" }}>
+            <div className={`${styles.inputRow} ${styles.inputRowRelative}`}>
               <input
                 value={start}
                 onChange={(e) => handleInputChange(e, "start")}
@@ -718,27 +705,11 @@ export default function MapPage() {
               </button>
               {/* 출발지 드롭다운 */}
               {showDropdown === "start" && searchResults.length > 0 && (
-                <ul
-                  style={{
-                    position: "absolute",
-                    top: 44,
-                    left: 0,
-                    right: 0,
-                    zIndex: 20,
-                    background: "#fff",
-                    border: "1px solid #ccc",
-                    borderRadius: 8,
-                    maxHeight: 180,
-                    overflowY: "auto",
-                    listStyle: "none",
-                    margin: 0,
-                    padding: 0,
-                  }}
-                >
+                <ul className={styles.dropdownList}>
                   {searchResults.map((poi) => (
                     <li
                       key={poi.id}
-                      style={{ padding: 8, cursor: "pointer" }}
+                      className={styles.dropdownItem}
                       onClick={() => handlePOISelection(poi, "start")}
                     >
                       {poi.name}
@@ -747,7 +718,7 @@ export default function MapPage() {
                 </ul>
               )}
             </div>
-            <div className={styles.inputRow} style={{ position: "relative" }}>
+            <div className={`${styles.inputRow} ${styles.inputRowRelative}`}>
               <input
                 value={end}
                 onChange={(e) => handleInputChange(e, "end")}
@@ -766,27 +737,11 @@ export default function MapPage() {
               </button>
               {/* 도착지 드롭다운 */}
               {showDropdown === "end" && searchResults.length > 0 && (
-                <ul
-                  style={{
-                    position: "absolute",
-                    top: 44,
-                    left: 0,
-                    right: 0,
-                    zIndex: 20,
-                    background: "#fff",
-                    border: "1px solid #ccc",
-                    borderRadius: 8,
-                    maxHeight: 180,
-                    overflowY: "auto",
-                    listStyle: "none",
-                    margin: 0,
-                    padding: 0,
-                  }}
-                >
+                <ul className={styles.dropdownList}>
                   {searchResults.map((poi) => (
                     <li
                       key={poi.id}
-                      style={{ padding: 8, cursor: "pointer" }}
+                      className={styles.dropdownItem}
                       onClick={() => handlePOISelection(poi, "end")}
                     >
                       {poi.name}
@@ -803,21 +758,7 @@ export default function MapPage() {
         {/* 경로 재선택 버튼 - 경로 안내 패널 바로 위 중앙 */}
         {showRoutePanel && (
           <button
-            style={{
-              position: "absolute",
-              left: "50%",
-              bottom: "41vh",
-              transform: "translateX(-50%)",
-              zIndex: 50,
-              background: "#FFFBE7",
-              border: "1.5px solid #F5D492",
-              borderRadius: 16,
-              padding: "8px 22px",
-              fontWeight: 600,
-              fontSize: 15,
-              boxShadow: "0 2px 8px rgba(0,0,0,0.07)",
-              cursor: "pointer",
-            }}
+            className={styles.routeSelectBtn}
             onClick={() => setShowRouteSelectModal(true)}
           >
             경로 재선택

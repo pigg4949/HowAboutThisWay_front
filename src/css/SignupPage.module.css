@@ -282,3 +282,42 @@
 .headerRight {
   flex: 1;
 }
+
+.headerLogoImg {
+  height: 32px;
+  width: auto;
+  display: block;
+  cursor: pointer;
+}
+
+.marginBottom15 {
+  margin-bottom: 15px;
+}
+
+.letterSpacing2 {
+  letter-spacing: 2px;
+}
+
+.errorMsg {
+  color: red;
+  font-size: 12px;
+}
+
+.successMsg {
+  color: green;
+  font-size: 12px;
+}
+
+.inputWithButtonMargin {
+  margin-top: 8px;
+}
+
+.modalContentWide {
+  max-width: 380px;
+  min-width: 280px;
+}
+
+.modalTitleCenter {
+  text-align: center;
+  margin-bottom: 16px;
+}

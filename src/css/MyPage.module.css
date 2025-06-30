@@ -246,3 +246,72 @@
 .modalClose:hover {
   color: #444;
 }
+
+.mypageHeaderRow {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  position: relative;
+}
+
+.mypageLogo {
+  height: 32px;
+  width: auto;
+  display: block;
+  position: absolute;
+  left: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  cursor: pointer;
+}
+
+.mypageTitle {
+  margin: 0 auto;
+  display: block;
+  text-align: center;
+}
+
+.historyList {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  height: 132px;
+  overflow: hidden;
+  position: relative;
+}
+
+.historyEmpty {
+  text-align: center;
+  color: #bbb;
+  font-size: 15px;
+  line-height: 44px;
+  height: 132px;
+}
+
+.historyContentFlex {
+  flex: 1;
+  margin-right: 8px;
+}
+
+.historyDate {
+  color: #888;
+  font-size: 13px;
+}
+
+.historyItemPointer {
+  cursor: pointer;
+}
+
+.historyItemInvisible {
+  opacity: 0;
+}
+
+.modalContentWide {
+  max-width: 380px;
+  min-width: 280px;
+}
+
+.modalTitleCenter {
+  text-align: center;
+  margin-bottom: 16px;
+}

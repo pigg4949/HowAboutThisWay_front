@@ -173,3 +173,108 @@
 .badge-hidden {
   display: none;
 }
+
+.inquiryModalContent {
+  max-width: 380px;
+  min-width: 280px;
+}
+
+.inquiryModalClose {
+  color: #222;
+}
+
+.inquiryModalTitle {
+  text-align: center;
+  margin-bottom: 16px;
+}
+
+.inquiryTextareaWrapper {
+  margin-bottom: 18px;
+}
+
+.inquiryTextarea {
+  width: 100%;
+  min-height: 100px;
+  padding: 12px;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  resize: vertical;
+  box-sizing: border-box;
+  font-size: 15px;
+}
+
+.inquirySendBtn {
+  width: 100%;
+  font-size: 16px;
+  height: 40px;
+  background: var(--primaryColor);
+  color: var(--textColor);
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  transition: opacity 0.15s;
+}
+.inquirySendBtn:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+.inquirySendBtn:hover:not(:disabled) {
+  opacity: 0.85;
+}
+
+.reportMapWrapper {
+  position: relative;
+  width: 100%;
+  height: 300px;
+  margin: 16px 0;
+}
+
+.reportMapContainer {
+  width: 100%;
+  height: 300px;
+  pointer-events: auto;
+}
+
+.moveCurrentBtn {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  z-index: 1100;
+  background: #fff;
+  border: 1px solid #bbb;
+  border-radius: 24px;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  cursor: pointer;
+  padding: 0;
+}
+
+.moveCurrentBtnImg {
+  width: 24px;
+  height: 24px;
+}
+
+.centerMarker {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -100%);
+  z-index: 1000;
+  pointer-events: none;
+  width: 24px;
+  height: 38px;
+}
+
+.centerMarkerImg {
+  width: 36px;
+  height: 36px;
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3));
+}
