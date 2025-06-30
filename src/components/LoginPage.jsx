@@ -20,6 +20,7 @@ export default function LoginPage() {
           ? "1"
           : "0"
       );
+      localStorage.removeItem("helpModalHide");
       if (res.isAdmin === 1 || res.isAdmin === "1" || res.isAdmin === true) {
         navigate("/admin");
       } else {

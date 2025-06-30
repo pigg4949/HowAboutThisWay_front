@@ -33,6 +33,7 @@ export const sendVerificationCode = async (phone) => {
 };
 
 // 인증번호 확인
-export const verifyCode = async (code, serverCode) => {
-  return code === serverCode;
+export const verifyCode = async (phone, code) => {
+  const res = await api.post("/users/verify-code", { phone, code });
+  return res.data; // message: 인증 성공
 };

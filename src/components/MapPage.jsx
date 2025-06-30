@@ -558,14 +558,21 @@ export default function MapPage() {
 
   // 시설 마커 상태
   const [facilityMarkers, setFacilityMarkers] = useState([]);
-  const [selectedFacilityType, setSelectedFacilityType] = useState(null);
+  const [activeFacilityTypes, setActiveFacilityTypes] = useState([]); // 여러 개 선택 가능
 
   // type별 한글명/아이콘 매핑 (임시)
   const FACILITY_TYPES = [
-    { type: 3, label: "엘리베이터", icon: "/markers/icon-pin.png" },
-    { type: 2, label: "장애인화장실", icon: "/markers/icon-pin.png" },
+    { type: 3, label: "엘리베이터", icon: "/markers/icon-elevator.png" },
+    { type: 2, label: "장애인화장실", icon: "/markers/icon-toilet.png" },
     { type: 1, label: "충전소", icon: "/markers/icon-ev.png" },
-    { type: 4, label: "에스컬레이터", icon: "/markers/icon-pin.png" },
+    { type: 4, label: "에스컬레이터", icon: "/markers/icon-escalator.png" },
+    { type: 5, label: "단차", icon: "/markers/icon-level-gap.png" },
+    { type: 6, label: "계단", icon: "/markers/icon-stairs.png" },
+    {
+      type: 7,
+      label: "보도 폭 좁음",
+      icon: "/markers/icon-narrow-sidewalk.png",
+    },
   ];
 
   // 시설 마커 클리어
@@ -575,14 +582,10 @@ export default function MapPage() {
   };
 
   // 시설 마커 표시
-  const showFacilityMarkers = async (type) => {
+  const showFacilityMarkers = async (types) => {
     clearFacilityMarkers();
-    const markers = await getMarkersByTypes([type]);
+    const markers = await getMarkersByTypes(types);
     if (!Array.isArray(markers) || markers.length === 0) return;
-    const iconPath =
-      window.location.origin +
-      (FACILITY_TYPES.find((f) => f.type === type)?.icon ||
-        "/markers/icon-pin.png");
     const newMarkers = markers.map((m) => {
       const lat = Number(m.lat);
       const lng = Number(m.lon);
@@ -590,8 +593,11 @@ export default function MapPage() {
         position: new window.Tmapv2.LatLng(lat, lng),
         map: mapInstanceRef.current,
         title: m.name || m.desc1,
-        icon: iconPath,
-        iconSize: new window.Tmapv2.Size(32, 32),
+        icon:
+          window.location.origin +
+          (FACILITY_TYPES.find((f) => f.type === m.type)?.icon ||
+            "/markers/icon-pin.png"),
+        iconSize: new window.Tmapv2.Size(54, 54),
       });
       marker.setMap(mapInstanceRef.current);
       return marker;
@@ -601,15 +607,15 @@ export default function MapPage() {
 
   // 시설 버튼 클릭 핸들러
   const handleFacilityBtnClick = (type) => {
-    if (selectedFacilityType === type) {
-      // 이미 선택된 경우 토글(마커 제거)
-      clearFacilityMarkers();
-      setSelectedFacilityType(null);
-    } else {
-      setSelectedFacilityType(type);
-      showFacilityMarkers(type);
-    }
+    setActiveFacilityTypes((prev) =>
+      prev.includes(type) ? prev.filter((t) => t !== type) : [...prev, type]
+    );
   };
+
+  // activeFacilityTypes 변경 시 마커 갱신
+  useEffect(() => {
+    showFacilityMarkers(activeFacilityTypes);
+  }, [activeFacilityTypes]);
 
   // 마커 패널 상태
   const [showMarkerPanel, setShowMarkerPanel] = useState(false);
@@ -803,8 +809,8 @@ export default function MapPage() {
             ref={markerPanelRef}
             style={{
               position: "absolute",
-              top: "calc(50% - 15px)",
-              right: 85,
+              top: "calc(30% - 15px)",
+              right: 95,
               width: 210,
               background: "rgba(255,255,255,0.8)",
               borderRadius: 18,
@@ -832,7 +838,9 @@ export default function MapPage() {
                   width: "100%",
                   fontSize: 17,
                   fontWeight: 500,
-                  color: selectedFacilityType === f.type ? "#d17b00" : "#222",
+                  color: activeFacilityTypes.includes(f.type)
+                    ? "#d17b00"
+                    : "#222",
                   outline: "none",
                 }}
                 onClick={() => handleFacilityBtnClick(f.type)}

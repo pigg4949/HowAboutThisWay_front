@@ -149,13 +149,13 @@ export default function SignupPage() {
   };
 
   // 인증번호 확인
-  const handleCodeConfirm = () => {
-    const isValid = verifyCode(code, serverCode);
-    if (isValid) {
-      clearInterval(timerRef.current);
+  const handleCodeConfirm = async () => {
+    try {
+      const response = await verifyCode(phone, code); // 서버에 검증 요청
       alert("✅ 인증 성공");
       setVerified(true);
-    } else {
+      clearInterval(timerRef.current);
+    } catch (err) {
       alert("❌ 인증 실패 또는 만료되었습니다.");
       setVerified(false);
     }
@@ -194,6 +194,7 @@ export default function SignupPage() {
         agreeLocation,
       });
       alert("회원가입이 완료되었습니다.");
+      localStorage.removeItem("helpModalHide");
       navigate("/");
     } catch (err) {
       console.error(err);

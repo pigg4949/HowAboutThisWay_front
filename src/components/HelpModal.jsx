@@ -1,88 +1,42 @@
 import React, { useState } from "react";
+import styles from "../css/HelpModal.module.css";
 
 const slides = [
   // 1. 2x2 카드 그리드 (길찾기/제보하기/즐겨찾기/내 정보)
   {
     content: (
-      <div
-        style={{
-          display: "grid",
-          gridTemplateColumns: "1fr 1fr",
-          gridTemplateRows: "1fr 1fr",
-          gap: 20,
-          width: "100%",
-          maxWidth: 320,
-          margin: "0 auto",
-          marginTop: 10,
-        }}
-      >
-        <div
-          style={{
-            background: "#f7f6f3",
-            borderRadius: 18,
-            display: "flex",
-            flexDirection: "column",
-            alignItems: "center",
-            justifyContent: "center",
-            height: 90,
-            boxShadow: "0 2px 8px rgba(0,0,0,0.04)",
-          }}
-        >
-          <span style={{ fontSize: 32, marginBottom: 6 }}>🧭</span>
-          <span style={{ fontSize: 16, fontWeight: 500, color: "#3b2b00" }}>
-            길찾기
-          </span>
+      <div className={styles.helpSlideGrid}>
+        <div className={styles.helpCard}>
+          <img
+            src="/images/icon-find.png"
+            alt="길찾기 아이콘"
+            className={styles.helpCardIcon}
+          />
+          <span className={styles.helpCardLabel}>길찾기</span>
         </div>
-        <div
-          style={{
-            background: "#f7f6f3",
-            borderRadius: 18,
-            display: "flex",
-            flexDirection: "column",
-            alignItems: "center",
-            justifyContent: "center",
-            height: 90,
-            boxShadow: "0 2px 8px rgba(0,0,0,0.04)",
-          }}
-        >
-          <span style={{ fontSize: 32, marginBottom: 6 }}>⚠️</span>
-          <span style={{ fontSize: 16, fontWeight: 500, color: "#3b2b00" }}>
-            제보하기
-          </span>
+        <div className={styles.helpCard}>
+          <img
+            src="/images/icon-report.png"
+            alt="제보하기 아이콘"
+            className={styles.helpCardIcon}
+          />
+          <span className={styles.helpCardLabel}>제보하기</span>
         </div>
-        <div
-          style={{
-            background: "#f7f6f3",
-            borderRadius: 18,
-            display: "flex",
-            flexDirection: "column",
-            alignItems: "center",
-            justifyContent: "center",
-            height: 90,
-            boxShadow: "0 2px 8px rgba(0,0,0,0.04)",
-          }}
-        >
-          <span style={{ fontSize: 32, marginBottom: 6 }}>⭐</span>
-          <span style={{ fontSize: 16, fontWeight: 500, color: "#3b2b00" }}>
-            즐겨찾기
-          </span>
+        <div className={styles.helpCard}>
+          <img
+            src="/images/icon-star.png"
+            alt="즐겨찾기 아이콘"
+            className={styles.helpCardIcon}
+          />
+          <span className={styles.helpCardLabel}>즐겨찾기</span>
         </div>
-        <div
-          style={{
-            background: "#f7f6f3",
-            borderRadius: 18,
-            display: "flex",
-            flexDirection: "column",
-            alignItems: "center",
-            justifyContent: "center",
-            height: 90,
-            boxShadow: "0 2px 8px rgba(0,0,0,0.04)",
-          }}
-        >
-          <span style={{ fontSize: 32, marginBottom: 6 }}>👤</span>
-          <span style={{ fontSize: 16, fontWeight: 500, color: "#3b2b00" }}>
-            내 정보
-          </span>
+        <div className={styles.helpCard}>
+          <img
+            src="/images/icon-user.png"
+            alt="내 정보 아이콘"
+            className={styles.helpCardIcon}
+          />
+          <span className={styles.helpCardLabel}>내 정보</span>
         </div>
       </div>
     ),
@@ -90,14 +44,7 @@ const slides = [
   // 2. 텍스트 설명 슬라이드 (예시와 동일하게)
   {
     content: (
-      <div
-        style={{
-          fontSize: 15,
-          lineHeight: 1.7,
-          color: "#222",
-          padding: "10px 6px 0 6px",
-        }}
-      >
+      <div className={styles.helpSlideText}>
         <b>길찾기 :</b> 지도에서 이동할 경로 안내와 위험 요소 마커를 확인할 수
         있습니다.
         <br />
@@ -115,26 +62,30 @@ const slides = [
   // 3. 리스트/아이콘 안내 슬라이드
   {
     content: (
-      <ul
-        style={{
-          fontSize: 15,
-          paddingLeft: 0,
-          listStyle: "none",
-          lineHeight: 1.7,
-          margin: 0,
-          marginTop: 10,
-        }}
-      >
-        <li style={{ display: "flex", alignItems: "center", gap: 8 }}>
-          <span style={{ fontSize: 20 }}>🟢</span> 마커 요소를 선택할 수
-          있습니다
+      <ul className={styles.helpSlideList}>
+        <li className={styles.helpSlideListItem}>
+          <img
+            src="/images/icon-menu.png"
+            alt="마커 요소 아이콘"
+            className={styles.helpListIcon}
+          />{" "}
+          마커 요소를 선택할 수 있습니다
         </li>
-        <li style={{ display: "flex", alignItems: "center", gap: 8 }}>
-          <span style={{ fontSize: 20 }}>🔴</span> 위험 요소를 제보할 수
-          있습니다
+        <li className={styles.helpSlideListItem}>
+          <img
+            src="/images/icon-report2.png"
+            alt="위험 요소 아이콘"
+            className={styles.helpListIcon}
+          />{" "}
+          위험 요소를 제보할 수 있습니다
         </li>
-        <li style={{ display: "flex", alignItems: "center", gap: 8 }}>
-          <span style={{ fontSize: 20 }}>📍</span> 현재 위치를 표시합니다
+        <li className={styles.helpSlideListItem}>
+          <img
+            src="/markers/icon-pin.png"
+            alt="현재 위치 아이콘"
+            className={styles.helpListIcon}
+          />{" "}
+          현재 위치를 표시합니다
         </li>
       </ul>
     ),
@@ -142,24 +93,30 @@ const slides = [
   // 4. 네비게이션 안내 슬라이드
   {
     content: (
-      <ul
-        style={{
-          fontSize: 15,
-          paddingLeft: 0,
-          listStyle: "none",
-          lineHeight: 1.7,
-          margin: 0,
-          marginTop: 10,
-        }}
-      >
-        <li style={{ display: "flex", alignItems: "center", gap: 8 }}>
-          <span style={{ fontSize: 20 }}>⭐</span> 즐겨찾기 화면으로 이동합니다
+      <ul className={styles.helpSlideList}>
+        <li className={styles.helpSlideListItem}>
+          <img
+            src="/images/icon-star.png"
+            alt="즐겨찾기 아이콘"
+            className={styles.helpListIcon}
+          />{" "}
+          즐겨찾기 화면으로 이동합니다
         </li>
-        <li style={{ display: "flex", alignItems: "center", gap: 8 }}>
-          <span style={{ fontSize: 20 }}>🏠</span> 메인 화면으로 이동합니다
+        <li className={styles.helpSlideListItem}>
+          <img
+            src="/images/icon-home.png"
+            alt="메인 화면 아이콘"
+            className={styles.helpListIcon}
+          />{" "}
+          메인 화면으로 이동합니다
         </li>
-        <li style={{ display: "flex", alignItems: "center", gap: 8 }}>
-          <span style={{ fontSize: 20 }}>👤</span> 내 정보 페이지로 이동합니다
+        <li className={styles.helpSlideListItem}>
+          <img
+            src="/images/icon-user.png"
+            alt="내 정보 아이콘"
+            className={styles.helpListIcon}
+          />{" "}
+          내 정보 페이지로 이동합니다
         </li>
       </ul>
     ),
@@ -167,31 +124,22 @@ const slides = [
   // 5. 마커/위험구역 안내 슬라이드
   {
     content: (
-      <ul
-        style={{
-          fontSize: 15,
-          paddingLeft: 0,
-          listStyle: "none",
-          lineHeight: 1.7,
-          margin: 0,
-          marginTop: 10,
-        }}
-      >
-        <li style={{ display: "flex", alignItems: "center", gap: 8 }}>
+      <ul className={styles.helpSlideList}>
+        <li className={styles.helpSlideListItem}>
           <span style={{ fontSize: 20 }}>🚧</span> 사용자 주의구역을 표시합니다
         </li>
-        <li style={{ display: "flex", alignItems: "center", gap: 8 }}>
+        <li className={styles.helpSlideListItem}>
           <span style={{ fontSize: 20 }}>🚻</span> 장애인 화장실을 표시합니다
         </li>
-        <li style={{ display: "flex", alignItems: "center", gap: 8 }}>
+        <li className={styles.helpSlideListItem}>
           <span style={{ fontSize: 20 }}>🔋</span> 휠체어 충전소 위치를
           표시합니다
         </li>
-        <li style={{ display: "flex", alignItems: "center", gap: 8 }}>
+        <li className={styles.helpSlideListItem}>
           <span style={{ fontSize: 20 }}>📍</span> 사용자가 제보한 위치를
           표시합니다
         </li>
-        <li style={{ display: "flex", alignItems: "center", gap: 8 }}>
+        <li className={styles.helpSlideListItem}>
           <span style={{ fontSize: 20 }}>⚠️</span> 사용자 위험구역을 표시합니다
         </li>
       </ul>
@@ -212,34 +160,8 @@ export default function HelpModal({ open, onClose }) {
   };
 
   return (
-    <div
-      style={{
-        position: "fixed",
-        left: 0,
-        top: 0,
-        width: "100vw",
-        height: "100vh",
-        background: "rgba(0,0,0,0.38)",
-        zIndex: 10000,
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "center",
-      }}
-    >
-      <div
-        style={{
-          background: "#fff",
-          borderRadius: 24,
-          padding: 28,
-          minWidth: 340,
-          maxWidth: 380,
-          boxShadow: "0 4px 24px rgba(0,0,0,0.13)",
-          position: "relative",
-          overflow: "hidden",
-          width: "90vw",
-          maxHeight: 520,
-        }}
-      >
+    <div className={styles.helpModalOverlay}>
+      <div className={styles.helpModalContent}>
         <div
           style={{
             minHeight: 210,
@@ -248,79 +170,32 @@ export default function HelpModal({ open, onClose }) {
             justifyContent: "center",
             position: "relative",
             width: "100%",
-            overflow: "hidden",
           }}
         >
-          <div
-            style={{
-              display: "flex",
-              width: `calc(100% * ${slides.length})`,
-              transition: "transform 0.5s cubic-bezier(.4,1.3,.5,1)",
-              transform: `translateX(-${page * 100}%)`,
-            }}
-          >
-            {slides.map((slide, idx) => (
-              <div
-                key={idx}
-                style={{
-                  minWidth: "100%",
-                  boxSizing: "border-box",
-                  padding: 8,
-                  display: "flex",
-                  flexDirection: "column",
-                  alignItems: "center",
-                  justifyContent: "center",
-                }}
-              >
-                {slide.content}
-              </div>
-            ))}
-          </div>
+          {slides[page].content}
         </div>
-        <div
-          style={{
-            display: "flex",
-            justifyContent: "center",
-            alignItems: "center",
-            gap: 12,
-            margin: "18px 0 8px 0",
-          }}
-        >
+        <div className={styles.helpModalNav}>
           <button
             onClick={handlePrev}
             disabled={page === 0}
-            style={{
-              background: "none",
-              border: "none",
-              fontSize: 22,
-              cursor: page === 0 ? "default" : "pointer",
-              color: page === 0 ? "#ccc" : "#333",
-            }}
+            className={styles.helpModalBtn}
           >
             &lt;
           </button>
           {slides.map((_, idx) => (
             <span
               key={idx}
-              style={{
-                width: 8,
-                height: 8,
-                borderRadius: 4,
-                background: idx === page ? "#e0b200" : "#ddd",
-                display: "inline-block",
-              }}
+              className={
+                idx === page
+                  ? `${styles.helpModalDot} ${styles.helpModalDotActive}`
+                  : styles.helpModalDot
+              }
             />
           ))}
           <button
             onClick={handleNext}
             disabled={page === slides.length - 1}
-            style={{
-              background: "none",
-              border: "none",
-              fontSize: 22,
-              cursor: page === slides.length - 1 ? "default" : "pointer",
-              color: page === slides.length - 1 ? "#ccc" : "#333",
-            }}
+            className={styles.helpModalBtn}
           >
             &gt;
           </button>
@@ -333,34 +208,27 @@ export default function HelpModal({ open, onClose }) {
             marginTop: 10,
           }}
         >
-          <label
-            style={{
-              fontSize: 15,
-              display: "flex",
-              alignItems: "center",
-              gap: 6,
-            }}
-          >
+          <label style={{ fontSize: 14 }}>
             <input
               type="checkbox"
               checked={dontShow}
               onChange={(e) => setDontShow(e.target.checked)}
-            />{" "}
+            />
             다시 보지 않기
           </label>
           <button
             onClick={handleClose}
             style={{
-              background: "#eee",
+              background: "none",
               border: "none",
-              borderRadius: 8,
-              padding: "8px 22px",
-              fontWeight: 600,
-              fontSize: 15,
+              fontSize: 18,
+              color: "#e74c3c",
               cursor: "pointer",
+              padding: "4px 12px",
+              borderRadius: 8,
             }}
           >
-            Skip
+            닫기
           </button>
         </div>
       </div>

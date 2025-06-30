@@ -21,6 +21,7 @@ export default function KakaoCallback() {
           if (res && res.token && res.userId) {
             localStorage.setItem("token", res.token);
             localStorage.setItem("isAdmin", "0");
+            localStorage.removeItem("helpModalHide"); // 카카오 로그인 시 도움말 모달 다시 보이도록
             navigate("/main");
           } else {
             alert("카카오 로그인 실패: 사용자 정보 없음");
