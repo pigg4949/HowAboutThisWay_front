@@ -125,8 +125,8 @@
   z-index: 200;
 }
 .fixedBtn {
-  width: 48px;
-  height: 48px;
+  width: 56px;
+  height: 56px;
   border-radius: 50%;
   border: none;
   display: flex;
@@ -136,12 +136,12 @@
   transition: background 0.15s, box-shadow 0.15s;
 }
 .fixedBtn:hover {
-  background: #ffe0a3;
+  /* background: #ffe0a3; */
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
 }
 .fixedBtn img {
-  width: 36px;
-  height: 36px;
+  width: 56px;
+  height: 56px;
   object-fit: contain;
 }
 

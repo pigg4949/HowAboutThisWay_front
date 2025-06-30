@@ -15,7 +15,6 @@ export default function MyPage() {
   const [info, setInfo] = useState(null);
   const [password, setPassword] = useState("");
   const [confirm, setConfirm] = useState("");
-  const [inquiry, setInquiry] = useState("");
   const [activeTab, setActiveTab] = useState("report");
   const [recentReports, setRecentReports] = useState([]);
   const [recentInquiries, setRecentInquiries] = useState([]);
@@ -65,26 +64,6 @@ export default function MyPage() {
       alert(
         "비밀번호 변경 실패: " + (err.response?.data?.message || err.message)
       );
-    }
-  };
-
-  const handleInquiry = async () => {
-    if (!inquiry.trim()) {
-      alert("문의 내용을 입력하세요.");
-      return;
-    }
-    const token = localStorage.getItem("token");
-    if (!token) {
-      alert("로그인이 필요합니다.");
-      navigate("/login");
-      return;
-    }
-    try {
-      await createInquiry({ content: inquiry }, token);
-      alert("문의가 전송되었습니다.");
-      setInquiry("");
-    } catch (err) {
-      alert("문의 전송 실패: " + (err.response?.data?.message || err.message));
     }
   };
 
@@ -185,19 +164,6 @@ export default function MyPage() {
 
         <button onClick={handleUpdate} className={styles.btnMain}>
           저장
-        </button>
-
-        <div className={styles.formGroup}>
-          <label>문의</label>
-          <textarea
-            value={inquiry}
-            onChange={(e) => setInquiry(e.target.value)}
-            placeholder="문의 또는 불편 사항"
-          />
-        </div>
-
-        <button onClick={handleInquiry} className={styles.btnSub}>
-          전송
         </button>
 
         {/* 제보/문의 내역 미리보기 */}

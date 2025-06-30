@@ -12,6 +12,7 @@ import {
 import ReportModal from "./ReportModal";
 import RouteSelectModal from "./RouteSelectModal";
 import BouncingDots from "./BouncingDots";
+import InquiryModal from "./InquiryModal";
 
 export default function MapPage() {
   const mapRef = useRef(null);
@@ -634,6 +635,8 @@ export default function MapPage() {
     console.log("showMarkerPanel 상태:", showMarkerPanel);
   }, [showMarkerPanel]);
 
+  const [showInquiryModal, setShowInquiryModal] = useState(false);
+
   if (error) {
     return (
       <div className={styles.pageWrapper}>
@@ -844,6 +847,13 @@ export default function MapPage() {
             onClick={handleMoveToCurrentLocation}
           >
             <img src="/images/icon-location.png" alt="위치" />
+          </button>
+
+          <button
+            className={styles.fixedBtn}
+            onClick={() => setShowInquiryModal(true)}
+          >
+            <img src="/images/icon-inquiry.png" alt="문의" />
           </button>
         </div>
         {/* 마커 패널 */}
@@ -1060,6 +1070,9 @@ export default function MapPage() {
           sortOption={routeSortOption}
           onSortChange={setRouteSortOption}
         />
+      )}
+      {showInquiryModal && (
+        <InquiryModal onClose={() => setShowInquiryModal(false)} />
       )}
     </div>
   );
