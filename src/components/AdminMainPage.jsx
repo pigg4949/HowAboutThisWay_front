@@ -1,9 +1,28 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import styles from "../css/MainPage.module.css";
+import { getReports } from "../api/report";
+import { getInquiry } from "../api/inquiry";
 import ReportModal from "./ReportModal";
 export default function AdminMainPage() {
   const [showReportModal, setShowReportModal] = useState(false);
+  const [pendingCount, setPendingCount] = useState(0);
+
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+    Promise.all([getReports(), getInquiry(token)]).then(
+      ([reports, inquiries]) => {
+        const pendingReports = (reports || []).filter(
+          (r) => r.status === "PENDING"
+        ).length;
+        const unansweredInquiries = (inquiries || []).filter(
+          (i) => !i.adminResponses
+        ).length;
+        setPendingCount(pendingReports + unansweredInquiries);
+      }
+    );
+  }, []);
+
   return (
     <>
       <main className={styles.main}>
@@ -28,12 +47,19 @@ export default function AdminMainPage() {
             />
             <span className={styles.label}>길찾기</span>
           </Link>
-          <Link to="/report" className={styles.card}>
+          <Link
+            to="/report"
+            className={styles.card}
+            style={{ position: "relative" }}
+          >
             <img
               src="/images/icon-report.png"
               alt="제보관리 아이콘"
               className={styles.icon}
             />
+            {pendingCount > 0 && (
+              <span className={styles.badge}>{pendingCount}</span>
+            )}
             <span className={styles.label}>제보관리</span>
           </Link>
           <Link to="/bookmark" className={styles.card}>

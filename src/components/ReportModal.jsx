@@ -213,11 +213,11 @@ export default function ReportModal({ onClose }) {
             }}
           >
             <img
-              src="/markers/pin_r_m_s.png"
+              src="/markers/icon-pin.png"
               alt="위치 마커"
               style={{
-                width: "24px",
-                height: "38px",
+                width: "36px",
+                height: "36px",
                 filter: "drop-shadow(0 2px 4px rgba(0,0,0,0.3))",
               }}
             />
@@ -240,7 +240,7 @@ export default function ReportModal({ onClose }) {
             <option value="">-- 분류 --</option>
             <option value="5">단차 큼</option>
             <option value="6">보도 폭 좁음</option>
-            <option value="toilet">장애인 화장실</option>
+            <option value="toilet">공사중</option>
             <option value="7">기타</option>
           </select>
 

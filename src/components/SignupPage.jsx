@@ -269,10 +269,11 @@ export default function SignupPage() {
               <span>-</span>
               <input
                 type="text"
-                value={"*******"}
-                onChange={(e) =>
-                  setSsnBack(e.target.value.replace(/[^0-9]/g, "").slice(0, 1))
-                }
+                value={"******" + (ssnBack ? "*" : "")}
+                onChange={(e) => {
+                  const v = e.target.value.replace(/[^0-9]/g, "").slice(-1);
+                  setSsnBack(v);
+                }}
                 placeholder="뒤 1자리"
                 maxLength={7}
                 inputMode="numeric"
