@@ -8,6 +8,7 @@ import {
   getTransitAllWalkCached,
   processRouteInstructionsCached,
   getMarkersByTypes,
+  getReportsByTypes,
 } from "../api/Map";
 import ReportModal from "./ReportModal";
 import RouteSelectModal from "./RouteSelectModal";
@@ -33,6 +34,7 @@ export default function MapPage() {
   const [routePolylines, setRoutePolylines] = useState([]);
   const [routeInstructions, setRouteInstructions] = useState([]);
   const [showRoutePanel, setShowRoutePanel] = useState(false);
+  const [routeFacilityMarkers, setRouteFacilityMarkers] = useState([]); // 경로 관련 시설 마커
 
   // 셔플 버튼 클릭 시 출발지/도착지 값 swap
   const handleShuffle = () => {
@@ -352,10 +354,65 @@ export default function MapPage() {
     setInstructions([]);
     setInstructionsLoading(true);
 
+    // 기존 경로 관련 시설 마커 제거
+    routeFacilityMarkers.forEach((marker) => marker.setMap(null));
+    setRouteFacilityMarkers([]);
+
     // 폴리라인 그리기
     drawTransitRoute(route.data);
 
-    // 비동기 안내문 요청
+    // ====== 경로 내 지하철역의 엘리베이터/에스컬레이터 마커 자동 표시 =====
+    // 1. 경로 내 지하철역 추출
+    const subwayStations = [];
+    route.data.legs.forEach((leg, idx) => {
+      if (leg.mode === "SUBWAY") {
+        // from, to, start, end 모두 확인
+        const fromName = leg.from?.name || leg.start?.name;
+        const toName = leg.to?.name || leg.end?.name;
+        console.log(`[DEBUG] SUBWAY leg[${idx}] from:`, fromName, 'to:', toName, leg);
+        console.log(`[DEBUG] typeof from:`, typeof leg.from, 'typeof to:', typeof leg.to, 'typeof start:', typeof leg.start, 'typeof end:', typeof leg.end);
+        const fromNameStr = fromName ? String(fromName).replace(/역$/, "") : undefined;
+        const toNameStr = toName ? String(toName).replace(/역$/, "") : undefined;
+        if (fromNameStr) subwayStations.push(fromNameStr);
+        if (toNameStr) subwayStations.push(toNameStr);
+      }
+    });
+    console.log('[DEBUG] 추출된 subwayStations:', subwayStations);
+    // 2. 시설 전체 받아오기
+    const facilityTypes = mode === "wheel" ? [3] : [3, 4];
+    const allFacilities = await getMarkersByTypes(facilityTypes);
+    console.log('[DEBUG] 받아온 시설 전체:', allFacilities);
+    // 3. comment에 역 이름이 포함된 시설만 필터링
+    const filteredFacilities = allFacilities.filter(
+      (fac) =>
+        fac.comment &&
+        subwayStations.some((station) => fac.comment.includes(station))
+    );
+    console.log('[DEBUG] 필터링된 시설:', filteredFacilities);
+    // 4. 지도에 마커 표시 및 관리
+    const newRouteFacilityMarkers = filteredFacilities.map((fac, idx) => {
+      const lat = Number(fac.lat);
+      const lng = Number(fac.lon);
+      console.log(`[DEBUG] 마커 생성 lat/lng:`, lat, lng, fac);
+      const marker = new window.Tmapv2.Marker({
+        position: new window.Tmapv2.LatLng(lat, lng),
+        map: mapInstanceRef.current,
+        title: fac.name || fac.desc1,
+        icon:
+          window.location.origin +
+          (FACILITY_TYPES.find((f) => f.type === fac.type)?.icon ||
+            "/markers/icon-pin.png"),
+        iconSize: new window.Tmapv2.Size(54, 54),
+      });
+      marker.addListener("click", () => {
+        setSelectedFacility(fac);
+        setShowFacilityModal(true);
+      });
+      marker.setMap(mapInstanceRef.current);
+      return marker;
+    });
+    setRouteFacilityMarkers(newRouteFacilityMarkers);
+    // ====== 안내문 요청 =====
     try {
       const processData = {
         legs: route.data.legs,
@@ -623,35 +680,70 @@ export default function MapPage() {
   };
 
   // 시설 마커 표시
+  const markerTypes = [1, 2, 3, 4];
+  const reportTypes = [5, 6, 7];
   const showFacilityMarkers = async (types) => {
     clearFacilityMarkers();
-    if (!types || types.length === 0) return; // ✅ 이 한 줄만 추가하면 끝
-    const markers = await getMarkersByTypes(types);
-    if (!Array.isArray(markers) || markers.length === 0) return;
-
-    const newMarkers = markers.map((m) => {
-      const lat = Number(m.lat);
-      const lng = Number(m.lon);
-      const marker = new window.Tmapv2.Marker({
-        position: new window.Tmapv2.LatLng(lat, lng),
-        map: mapInstanceRef.current,
-        title: m.name || m.desc1,
-        icon:
-          window.location.origin +
-          (FACILITY_TYPES.find((f) => f.type === m.type)?.icon ||
-            "/markers/icon-pin.png"),
-        iconSize: new window.Tmapv2.Size(54, 54),
-      });
-      marker.addListener("click", () => {
-        setSelectedFacility(m);
-        setShowFacilityModal(true);
-      });
-      marker.setMap(mapInstanceRef.current);
-      return marker;
-    });
-    setFacilityMarkers(newMarkers);
+    if (!types || types.length === 0) return;
+    const markerTypesToShow = types.filter((t) => markerTypes.includes(t));
+    const reportTypesToShow = types.filter((t) => reportTypes.includes(t));
+    let allMarkers = [];
+    // 시설 마커
+    if (markerTypesToShow.length > 0) {
+      const markers = await getMarkersByTypes(markerTypesToShow);
+      if (Array.isArray(markers) && markers.length > 0) {
+        const facilityMarkersArr = markers.map((m) => {
+          const lat = Number(m.lat);
+          const lng = Number(m.lon);
+          const marker = new window.Tmapv2.Marker({
+            position: new window.Tmapv2.LatLng(lat, lng),
+            map: mapInstanceRef.current,
+            title: m.name || m.desc1,
+            icon:
+              window.location.origin +
+              (FACILITY_TYPES.find((f) => f.type === m.type)?.icon ||
+                "/markers/icon-pin.png"),
+            iconSize: new window.Tmapv2.Size(54, 54),
+          });
+          marker.addListener("click", () => {
+            setSelectedFacility(m);
+            setShowFacilityModal(true);
+          });
+          marker.setMap(mapInstanceRef.current);
+          return marker;
+        });
+        allMarkers = allMarkers.concat(facilityMarkersArr);
+      }
+    }
+    // 제보 마커
+    if (reportTypesToShow.length > 0) {
+      const reports = await getReportsByTypes(reportTypesToShow);
+      if (Array.isArray(reports) && reports.length > 0) {
+        const reportMarkersArr = reports.map((m) => {
+          const lat = Number(m.lat);
+          const lng = Number(m.lon);
+          const marker = new window.Tmapv2.Marker({
+            position: new window.Tmapv2.LatLng(lat, lng),
+            map: mapInstanceRef.current,
+            title: m.name || m.desc1,
+            icon:
+              window.location.origin +
+              (FACILITY_TYPES.find((f) => f.type === m.type)?.icon ||
+                "/markers/icon-pin.png"),
+            iconSize: new window.Tmapv2.Size(54, 54),
+          });
+          marker.addListener("click", () => {
+            setSelectedFacility(m);
+            setShowFacilityModal(true);
+          });
+          marker.setMap(mapInstanceRef.current);
+          return marker;
+        });
+        allMarkers = allMarkers.concat(reportMarkersArr);
+      }
+    }
+    setFacilityMarkers(allMarkers);
   };
-
 
   // 시설 버튼 클릭 핸들러
   const handleFacilityBtnClick = (type) => {
@@ -982,7 +1074,6 @@ export default function MapPage() {
         <div style={{position:'fixed', left:0, top:0, width:'100vw', height:'100vh', background:'rgba(0,0,0,0.3)', zIndex:9999, display:'flex', alignItems:'center', justifyContent:'center'}}>
           <div style={{background:'#fff', borderRadius:16, padding:32, minWidth:280, minHeight:120, position:'relative'}}>
             <button style={{position:'absolute', right:12, top:12, fontSize:24, background:'none', border:'none', cursor:'pointer'}} onClick={()=>setShowFacilityModal(false)}>&times;</button>
-            <h3>시설 정보</h3>
             <div>
               {selectedFacility ? (
                 <>
