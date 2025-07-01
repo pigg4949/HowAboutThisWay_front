@@ -13,6 +13,7 @@ import ReportModal from "./ReportModal";
 import RouteSelectModal from "./RouteSelectModal";
 import BouncingDots from "./BouncingDots";
 import InquiryModal from "./InquiryModal";
+import HelpModal from "./HelpModal";
 
 export default function MapPage() {
   const mapRef = useRef(null);
@@ -596,6 +597,9 @@ export default function MapPage() {
   // 시설 마커 상태
   const [facilityMarkers, setFacilityMarkers] = useState([]);
   const [activeFacilityTypes, setActiveFacilityTypes] = useState([]); // 여러 개 선택 가능
+  // 시설 모달 상태
+  const [showFacilityModal, setShowFacilityModal] = useState(false);
+  const [selectedFacility, setSelectedFacility] = useState(null);
 
   // type별 한글명/아이콘 매핑 (임시)
   const FACILITY_TYPES = [
@@ -621,8 +625,10 @@ export default function MapPage() {
   // 시설 마커 표시
   const showFacilityMarkers = async (types) => {
     clearFacilityMarkers();
+    if (!types || types.length === 0) return; // ✅ 이 한 줄만 추가하면 끝
     const markers = await getMarkersByTypes(types);
     if (!Array.isArray(markers) || markers.length === 0) return;
+
     const newMarkers = markers.map((m) => {
       const lat = Number(m.lat);
       const lng = Number(m.lon);
@@ -636,11 +642,16 @@ export default function MapPage() {
             "/markers/icon-pin.png"),
         iconSize: new window.Tmapv2.Size(54, 54),
       });
+      marker.addListener("click", () => {
+        setSelectedFacility(m);
+        setShowFacilityModal(true);
+      });
       marker.setMap(mapInstanceRef.current);
       return marker;
     });
     setFacilityMarkers(newMarkers);
   };
+
 
   // 시설 버튼 클릭 핸들러
   const handleFacilityBtnClick = (type) => {
@@ -965,6 +976,37 @@ export default function MapPage() {
       )}
       {showInquiryModal && (
         <InquiryModal onClose={() => setShowInquiryModal(false)} />
+      )}
+      {/* 시설 정보 모달 (임시) */}
+      {showFacilityModal && (
+        <div style={{position:'fixed', left:0, top:0, width:'100vw', height:'100vh', background:'rgba(0,0,0,0.3)', zIndex:9999, display:'flex', alignItems:'center', justifyContent:'center'}}>
+          <div style={{background:'#fff', borderRadius:16, padding:32, minWidth:280, minHeight:120, position:'relative'}}>
+            <button style={{position:'absolute', right:12, top:12, fontSize:24, background:'none', border:'none', cursor:'pointer'}} onClick={()=>setShowFacilityModal(false)}>&times;</button>
+            <h3>시설 정보</h3>
+            <div>
+              {selectedFacility ? (
+                <>
+                  {selectedFacility.address && (
+                    <div>{selectedFacility.address}</div>
+                  )}
+                  {selectedFacility.comment && (
+                    <div>{selectedFacility.comment}</div>
+                  )}
+                  {selectedFacility.imageUrl && (
+                    <div style={{marginTop:8}}>
+                      <img src={selectedFacility.imageUrl} alt="시설 이미지" style={{maxWidth:200, maxHeight:200, borderRadius:8}} />
+                    </div>
+                  )}
+                  {!(selectedFacility.address || selectedFacility.comment || selectedFacility.imageUrl) && (
+                    <div>추가 정보가 없습니다.</div>
+                  )}
+                </>
+              ) : (
+                <div>정보 없음</div>
+              )}
+            </div>
+          </div>
+        </div>
       )}
     </div>
   );
