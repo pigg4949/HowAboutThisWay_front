@@ -670,9 +670,6 @@ export default function MapPage() {
               }`}
               onClick={() => {
                 setMode("elder");
-                if (selectedLocations.start && selectedLocations.end) {
-                  handleSearch();
-                }
               }}
             >
               노약자/임산부
@@ -683,9 +680,6 @@ export default function MapPage() {
               }`}
               onClick={() => {
                 setMode("wheel");
-                if (selectedLocations.start && selectedLocations.end) {
-                  handleSearch();
-                }
               }}
             >
               휠체어/유모차
@@ -710,19 +704,21 @@ export default function MapPage() {
                 <img src="/images/icon-shuffle.png" alt="셔플" />
               </button>
               {/* 출발지 드롭다운 */}
-              {showDropdown === "start" && searchResults.length > 0 && (
-                <ul className={styles.dropdownList}>
-                  {searchResults.map((poi) => (
-                    <li
-                      key={poi.id}
-                      className={styles.dropdownItem}
-                      onClick={() => handlePOISelection(poi, "start")}
-                    >
-                      {poi.name}
-                    </li>
-                  ))}
-                </ul>
-              )}
+              {showDropdown === "start" &&
+                searchResults.length > 0 &&
+                start.trim() && (
+                  <ul className={styles.dropdownList}>
+                    {searchResults.map((poi) => (
+                      <li
+                        key={poi.id}
+                        className={styles.dropdownItem}
+                        onClick={() => handlePOISelection(poi, "start")}
+                      >
+                        {poi.name}
+                      </li>
+                    ))}
+                  </ul>
+                )}
             </div>
             <div className={`${styles.inputRow} ${styles.inputRowRelative}`}>
               <input
@@ -742,19 +738,21 @@ export default function MapPage() {
                 <img src="/images/icon-search.png" alt="검색" />
               </button>
               {/* 도착지 드롭다운 */}
-              {showDropdown === "end" && searchResults.length > 0 && (
-                <ul className={styles.dropdownList}>
-                  {searchResults.map((poi) => (
-                    <li
-                      key={poi.id}
-                      className={styles.dropdownItem}
-                      onClick={() => handlePOISelection(poi, "end")}
-                    >
-                      {poi.name}
-                    </li>
-                  ))}
-                </ul>
-              )}
+              {showDropdown === "end" &&
+                searchResults.length > 0 &&
+                end.trim() && (
+                  <ul className={styles.dropdownList}>
+                    {searchResults.map((poi) => (
+                      <li
+                        key={poi.id}
+                        className={styles.dropdownItem}
+                        onClick={() => handlePOISelection(poi, "end")}
+                      >
+                        {poi.name}
+                      </li>
+                    ))}
+                  </ul>
+                )}
             </div>
           </div>
         </div>
