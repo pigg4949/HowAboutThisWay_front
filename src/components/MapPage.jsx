@@ -4,9 +4,9 @@ import { Link, useLocation } from "react-router-dom";
 import styles from "../css/MapPage.module.css";
 import {
   searchPOI,
-  getTransitWithConnector,
-  getTransitAllWalk,
-  processRouteInstructions,
+  getTransitWithConnectorCached,
+  getTransitAllWalkCached,
+  processRouteInstructionsCached,
   getMarkersByTypes,
 } from "../api/Map";
 import ReportModal from "./ReportModal";
@@ -224,9 +224,9 @@ export default function MapPage() {
       };
       let transitResult;
       if (mode === "wheel") {
-        transitResult = await getTransitWithConnector(routeData);
+        transitResult = await getTransitWithConnectorCached(routeData);
       } else {
-        transitResult = await getTransitAllWalk(routeData);
+        transitResult = await getTransitAllWalkCached(routeData);
       }
       const newRoutes = [];
       if (
@@ -297,7 +297,9 @@ export default function MapPage() {
               startName: startLocation.name,
               endName: endLocation.name,
             };
-            const processedResult = await processRouteInstructions(processData);
+            const processedResult = await processRouteInstructionsCached(
+              processData
+            );
             processedInstructions = processedResult.instructions || [];
           } catch (error) {
             console.error("자연어 처리 중 오류:", error);
@@ -361,7 +363,7 @@ export default function MapPage() {
         startName: start,
         endName: end,
       };
-      const processedResult = await processRouteInstructions(processData);
+      const processedResult = await processRouteInstructionsCached(processData);
       setInstructions(processedResult.instructions || []);
     } catch (e) {
       setInstructions(["안내문 생성에 실패했습니다."]);
