@@ -849,6 +849,11 @@ export default function MapPage() {
                     className={styles.routePanelListItem}
                   >
                     {instruction}
+                    {/* {
+                      typeof instruction === "string"
+                        ? instruction
+                        : instruction.instruction // 객체라면 instruction 필드만 출력
+                    } */}
                   </li>
                 ))
               ) : (

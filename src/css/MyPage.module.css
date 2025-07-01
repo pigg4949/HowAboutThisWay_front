@@ -288,8 +288,8 @@
   list-style: none;
   padding: 0;
   margin: 0;
-  height: 132px;
-  overflow: hidden;
+  max-height: 132px;
+  overflow-y: auto;
   position: relative;
 }
 
@@ -332,6 +332,11 @@
 .detailModalContent {
   max-width: 380px;
   min-width: 280px;
+  background: white;
+  border-radius: 12px;
+  padding: 24px;
+  position: relative;
+  overflow-x: hidden;
 }
 .detailModalTitle {
   text-align: center;

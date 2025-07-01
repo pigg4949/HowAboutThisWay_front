@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import styles from "../css/AdminMainPage.module.css";
 import { getReports } from "../api/report";
 import { getInquiry } from "../api/inquiry";
@@ -7,6 +7,20 @@ import ReportModal from "./ReportModal";
 export default function AdminMainPage() {
   const [showReportModal, setShowReportModal] = useState(false);
   const [pendingCount, setPendingCount] = useState(0);
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+    const isAdmin = localStorage.getItem("isAdmin") === "1";
+    if (!token) {
+      alert("로그인이 필요합니다.");
+      navigate("/login");
+    } else if (!isAdmin) {
+      alert("관리자만 접근 가능합니다.");
+      navigate("/main");
+    }
+    // 관리자는 진입 허용
+  }, [navigate]);
 
   useEffect(() => {
     const token = localStorage.getItem("token");

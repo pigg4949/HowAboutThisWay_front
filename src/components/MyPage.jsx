@@ -56,7 +56,7 @@ export default function MyPage() {
       return;
     }
     try {
-      await updateUser({ password });
+      await updateUser({ passwordHash: password });
       alert("변경 완료");
       setPassword("");
       setConfirm("");
@@ -165,8 +165,7 @@ export default function MyPage() {
           </div>
           <ul className={styles.historyList}>
             {(() => {
-              const list =
-                activeTab === "report" ? recentReports : recentInquiries;
+              const list = activeTab === "report" ? allReports : allInquiries;
               if (list.length === 0) {
                 return (
                   <li className={styles.historyEmpty}>
@@ -174,8 +173,15 @@ export default function MyPage() {
                   </li>
                 );
               }
-              const items = list.map((item, idx) => (
-                <li key={item.idx || idx} className={styles.historyItem}>
+              return list.map((item, idx) => (
+                <li
+                  key={item.idx || idx}
+                  className={`${styles.historyItem} ${styles.historyItemPointer}`}
+                  onClick={() => {
+                    setSelectedItem(item);
+                    setShowDetailModal(true);
+                  }}
+                >
                   <span
                     className={`${styles.statusDot} ${
                       activeTab === "report"
@@ -199,33 +205,8 @@ export default function MyPage() {
                   </span>
                 </li>
               ));
-              // 빈 줄로 채우기
-              while (items.length < 3) {
-                items.push(
-                  <li
-                    key={"empty-" + items.length}
-                    className={`${styles.historyItem} ${styles.historyItemInvisible}`}
-                  >
-                    <span className={styles.statusDot}></span>
-                    <span className={styles.historyContentFlex}></span>
-                    <span></span>
-                  </li>
-                );
-              }
-              return items;
             })()}
           </ul>
-          {/* 더보기 버튼: 리스트가 1개 이상일 때만, 리스트 바깥 아래에 */}
-          {(activeTab === "report" ? recentReports : recentInquiries).length >
-            0 && (
-            <button
-              className={styles.moreBtn}
-              onClick={() => setShowAllModal(true)}
-              type="button"
-            >
-              더보기
-            </button>
-          )}
         </div>
 
         {/* 로그아웃/회원탈퇴 버튼 하단 고정 */}
@@ -238,65 +219,6 @@ export default function MyPage() {
           </button>
         </div>
       </main>
-
-      {/* 전체 내역 모달 */}
-      {showAllModal && (
-        <div
-          className={styles.modalOverlay}
-          onClick={() => setShowAllModal(false)}
-        >
-          <div
-            className={`${styles.modalContent} ${styles.modalContentWide}`}
-            onClick={(e) => e.stopPropagation()}
-          >
-            <button
-              className={styles.modalClose}
-              onClick={() => setShowAllModal(false)}
-            >
-              ×
-            </button>
-            <h2 className={styles.modalTitleCenter}>
-              {activeTab === "report" ? "제보 내역 전체" : "문의 내역 전체"}
-            </h2>
-            <ul className={styles.historyList}>
-              {(activeTab === "report" ? allReports : allInquiries).map(
-                (item, idx) => (
-                  <li
-                    key={item.idx || idx}
-                    className={`${styles.historyItem} ${styles.historyItemPointer}`}
-                    onClick={() => {
-                      setSelectedItem(item);
-                      setShowDetailModal(true);
-                    }}
-                  >
-                    <span
-                      className={`${styles.statusDot} ${
-                        activeTab === "report"
-                          ? item.status === "APPROVED"
-                            ? styles.statusDotApproved
-                            : item.status === "REJECTED"
-                            ? styles.statusDotRejected
-                            : styles.statusDotPending
-                          : item.adminResponses
-                          ? styles.statusDotApproved
-                          : styles.statusDotPending
-                      }`}
-                    ></span>
-                    <span
-                      className={`${styles.historyContent} ${styles.historyContentFlex}`}
-                    >
-                      {activeTab === "report" ? item.comment : item.content}
-                    </span>
-                    <span className={styles.historyDate}>
-                      {(item.createdAt || "").slice(0, 10)}
-                    </span>
-                  </li>
-                )
-              )}
-            </ul>
-          </div>
-        </div>
-      )}
 
       {/* 상세 모달 */}
       {showDetailModal && selectedItem && (
