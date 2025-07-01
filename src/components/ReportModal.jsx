@@ -50,7 +50,7 @@ export default function ReportModal({ onClose }) {
         center,
         width: "100%",
         height: "300px",
-        zoom: 15,
+        zoom: 17,
         zoomControl: true,
         scrollwheel: true,
       });
@@ -182,7 +182,7 @@ export default function ReportModal({ onClose }) {
         </div>
 
         {lon != null && lat != null && (
-          <p>
+          <p hidden>
             선택된 위치: 경도 {lon.toFixed(6)}, 위도 {lat.toFixed(6)}
           </p>
         )}
@@ -195,10 +195,10 @@ export default function ReportModal({ onClose }) {
             required
           >
             <option value="">-- 분류 --</option>
-            <option value="5">단차 큼</option>
-            <option value="6">보도 폭 좁음</option>
-            <option value="toilet">공사중</option>
-            <option value="7">기타</option>
+            <option value="5">단차 높음</option>
+            <option value="6">계단</option>
+            <option value="7">보도 폭 좁음</option>
+            
           </select>
 
           <textarea
@@ -208,7 +208,11 @@ export default function ReportModal({ onClose }) {
             className={styles.modalTextarea}
             required
           />
-
+           {image && (
+            <div style={{ marginBottom: 8, color: "#333", fontSize: 14 }}>
+              첨부 파일: {image.name}
+            </div>
+          )}
           <div className={styles.modalActions}>
             <label className={styles.buttonSecondary}>
               이미지 업로드

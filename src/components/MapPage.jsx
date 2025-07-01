@@ -464,7 +464,7 @@ export default function MapPage() {
             const center = new window.Tmapv2.LatLng(37.566481, 126.985023);
             mapInstanceRef.current = new window.Tmapv2.Map(mapRef.current, {
               center: center,
-              zoom: 15,
+              zoom: 16,
               width: "100%",
               height: "100%",
             });
@@ -1072,28 +1072,28 @@ export default function MapPage() {
       {/* 시설 정보 모달 (임시) */}
       {showFacilityModal && (
         <div style={{position:'fixed', left:0, top:0, width:'100vw', height:'100vh', background:'rgba(0,0,0,0.3)', zIndex:9999, display:'flex', alignItems:'center', justifyContent:'center'}}>
-          <div style={{background:'#fff', borderRadius:16, padding:32, minWidth:280, minHeight:120, position:'relative'}}>
+          <div style={{background:'#fff', borderRadius:16, padding:32, minWidth:280, minHeight:120, position:'relative', display:'flex', flexDirection:'column', alignItems:'center', justifyContent:'center'}}>
             <button style={{position:'absolute', right:12, top:12, fontSize:24, background:'none', border:'none', cursor:'pointer'}} onClick={()=>setShowFacilityModal(false)}>&times;</button>
-            <div>
+            <div style={{width:'100%', display:'flex', flexDirection:'column', alignItems:'center', justifyContent:'center'}}>
               {selectedFacility ? (
                 <>
                   {selectedFacility.address && (
-                    <div>{selectedFacility.address}</div>
+                    <div style={{textAlign:'center'}}>{selectedFacility.address}</div>
                   )}
                   {selectedFacility.comment && (
-                    <div>{selectedFacility.comment}</div>
+                    <div style={{textAlign:'center'}}>{selectedFacility.comment}</div>
                   )}
                   {selectedFacility.imageUrl && (
-                    <div style={{marginTop:8}}>
-                      <img src={selectedFacility.imageUrl} alt="시설 이미지" style={{maxWidth:200, maxHeight:200, borderRadius:8}} />
+                    <div style={{marginTop:8, display:'flex', justifyContent:'center'}}>
+                      <img src={selectedFacility.imageUrl} alt="시설 이미지" style={{maxWidth:200, maxHeight:200, borderRadius:8, display:'block', margin:'0 auto'}} />
                     </div>
                   )}
                   {!(selectedFacility.address || selectedFacility.comment || selectedFacility.imageUrl) && (
-                    <div>추가 정보가 없습니다.</div>
+                    <div style={{textAlign:'center'}}>추가 정보가 없습니다.</div>
                   )}
                 </>
               ) : (
-                <div>정보 없음</div>
+                <div style={{textAlign:'center'}}>정보 없음</div>
               )}
             </div>
           </div>

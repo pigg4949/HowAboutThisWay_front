@@ -223,3 +223,38 @@
   display: block;
   text-align: center;
 }
+
+.addFormBtns {
+  display: flex;
+  flex-direction: row;
+  gap: 10px;
+  justify-content: space-between;
+  align-items: center;
+}
+.btnPrimary {
+  flex: 1;
+  width: 100%;
+  background: #f5d492;
+  color: #333;
+  border: none;
+  border-radius: 10px;
+  padding: 12px 0;
+  font-size: 16px;
+  font-weight: bold;
+  cursor: pointer;
+  margin-top: 8px;
+}
+.btnSecondary {
+  flex: 1;
+  background: #ffe6b0;
+  color: #b88a00;
+  border: none;
+  border-radius: 10px;
+  padding: 0 16px;
+  height: 44px;
+  font-size: 15px;
+  font-weight: 500;
+  cursor: pointer;
+  white-space: nowrap;
+  margin-top: 8px;
+}
