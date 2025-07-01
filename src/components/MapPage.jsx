@@ -522,9 +522,12 @@ export default function MapPage() {
   };
 
   // 현재 위치로 지도 이동
-  const [myLocationMarker, setMyLocationMarker] = useState(null);
-  const handleMoveToCurrentLocation = () => {
-    setShowMarkerPanel(false); // 위치 버튼 누르면 마커 패널 닫힘
+  const myLocationMarkerRef = useRef(null);
+  const [isAutoLocating, setIsAutoLocating] = useState(false);
+  const autoLocateIntervalRef = useRef(null);
+
+  // 자동 위치 갱신 함수
+  const updateCurrentLocation = () => {
     if (!navigator.geolocation) {
       alert("이 브라우저에서는 위치 정보를 지원하지 않습니다.");
       return;
@@ -537,8 +540,8 @@ export default function MapPage() {
             new window.Tmapv2.LatLng(latitude, longitude)
           );
           // 기존 내 위치 마커 제거
-          if (myLocationMarker) {
-            myLocationMarker.setMap(null);
+          if (myLocationMarkerRef.current) {
+            myLocationMarkerRef.current.setMap(null);
           }
           // 내 위치 마커 추가
           const marker = new window.Tmapv2.Marker({
@@ -548,7 +551,7 @@ export default function MapPage() {
             icon: "/markers/icon-pin.png",
             iconSize: new window.Tmapv2.Size(36, 36),
           });
-          setMyLocationMarker(marker);
+          myLocationMarkerRef.current = marker;
         }
       },
       (err) => {
@@ -557,6 +560,38 @@ export default function MapPage() {
       { enableHighAccuracy: true, timeout: 5000, maximumAge: 0 }
     );
   };
+
+  // 현위치 버튼 클릭 핸들러
+  const handleMoveToCurrentLocation = () => {
+    setShowMarkerPanel(false); // 위치 버튼 누르면 마커 패널 닫힘
+    if (!isAutoLocating) {
+      // 자동 갱신 시작
+      updateCurrentLocation(); // 즉시 1회 실행
+      autoLocateIntervalRef.current = setInterval(updateCurrentLocation, 3000);
+      setIsAutoLocating(true);
+    } else {
+      // 자동 갱신 종료
+      if (autoLocateIntervalRef.current) {
+        clearInterval(autoLocateIntervalRef.current);
+        autoLocateIntervalRef.current = null;
+      }
+      setIsAutoLocating(false);
+      // 마커 완전 제거
+      if (myLocationMarkerRef.current) {
+        myLocationMarkerRef.current.setMap(null);
+        myLocationMarkerRef.current = null;
+      }
+    }
+  };
+
+  // 언마운트 시 interval 정리
+  useEffect(() => {
+    return () => {
+      if (autoLocateIntervalRef.current) {
+        clearInterval(autoLocateIntervalRef.current);
+      }
+    };
+  }, []);
 
   // 시설 마커 상태
   const [facilityMarkers, setFacilityMarkers] = useState([]);
@@ -790,7 +825,7 @@ export default function MapPage() {
             <img src="/images/icon-report2.png" alt="신고" />
           </button>
           <button
-            className={styles.fixedBtn}
+            className={`${styles.fixedBtn} ${isAutoLocating ? styles.fixedBtnActive : ""}`}
             onClick={handleMoveToCurrentLocation}
           >
             <img src="/images/icon-location.png" alt="위치" />
