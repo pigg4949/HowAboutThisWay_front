@@ -99,35 +99,18 @@ export default function BookmarkPage() {
   return (
     <div className={styles.pageWrapper}>
       <header className={styles.headerBar}>
-        <div
-          style={{
-            display: "flex",
-            alignItems: "center",
-            width: "100%",
-            position: "relative",
-          }}
-        >
+        <div className={styles.headerContainer}>
           <img
             src="/images/HATWlogo.png"
             alt="HATW 로고"
-            style={{
-              height: 32,
-              width: "auto",
-              display: "block",
-              position: "absolute",
-              left: 0,
-              top: "50%",
-              transform: "translateY(-50%)",
-              cursor: "pointer",
-            }}
+            className={styles.headerLogo}
             onClick={() => {
               const isAdmin = localStorage.getItem("isAdmin") === "1";
               navigate(isAdmin ? "/admin" : "/main");
             }}
           />
           <span
-            className={styles.headerTitle}
-            style={{ margin: "0 auto", display: "block", textAlign: "center" }}
+            className={`${styles.headerTitle} ${styles.headerTitleCentered}`}
           >
             즐겨찾기
           </span>

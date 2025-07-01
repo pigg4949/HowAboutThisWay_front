@@ -180,6 +180,19 @@
   margin-right: 8px;
   display: inline-block;
 }
+
+.statusDotApproved {
+  background: #b2f2bb;
+}
+
+.statusDotRejected {
+  background: #ffc9c9;
+}
+
+.statusDotPending {
+  background: #ccc;
+}
+
 .moreBtn {
   background: none;
   border: none;
@@ -314,4 +327,60 @@
 .modalTitleCenter {
   text-align: center;
   margin-bottom: 16px;
+}
+
+.detailModalContent {
+  max-width: 380px;
+  min-width: 280px;
+}
+.detailModalTitle {
+  text-align: center;
+  margin-bottom: 16px;
+}
+.detailModalImage {
+  width: 100%;
+  max-height: 200px;
+  object-fit: cover;
+  border-radius: 8px;
+  border: 1px solid #ddd;
+  margin-bottom: 16px;
+}
+.detailModalSection {
+  margin-bottom: 16px;
+}
+.detailModalSectionTitle {
+  font-weight: 600;
+  margin-bottom: 8px;
+}
+.detailModalSectionBox {
+  background: #f7f7f7;
+  border-radius: 8px;
+  padding: 12px;
+  min-height: 48px;
+}
+.detailModalStatusBox {
+  background: #f7f7f7;
+  border-radius: 8px;
+  padding: 12px;
+  font-weight: 600;
+}
+.detailModalStatusApproved {
+  color: #28a745;
+}
+.detailModalStatusRejected {
+  color: #dc3545;
+}
+.detailModalStatusPending {
+  color: #6c757d;
+}
+.detailModalEditBtn {
+  width: 100%;
+  padding: 12px;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 16px;
+  cursor: pointer;
+  margin-top: 16px;
 }

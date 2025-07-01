@@ -111,7 +111,6 @@ export default function ReportPage() {
               <div
                 key={item.idx}
                 className={styles.reportItem}
-                style={{ cursor: "pointer" }}
                 onClick={() => {
                   setSelectedReport(item);
                   setShowModal(true);
@@ -138,7 +137,6 @@ export default function ReportPage() {
               <div
                 key={item.idx}
                 className={styles.reportItem}
-                style={{ cursor: "pointer" }}
                 onClick={() => {
                   setSelectedInquiry(item);
                   setShowInquiryModal(true);
@@ -209,8 +207,7 @@ export default function ReportPage() {
       {showInquiryModal && selectedInquiry && (
         <div className={styles.modalOverlay}>
           <div
-            className={styles.modalContent}
-            style={{ maxWidth: 380, minWidth: 280 }}
+            className={`${styles.modalContent} ${styles.inquiryModalContent}`}
           >
             <button
               className={styles.modalClose}
@@ -218,46 +215,20 @@ export default function ReportPage() {
             >
               ×
             </button>
-            <h2 style={{ textAlign: "center", marginBottom: 16 }}>문의 답변</h2>
-            <div
-              style={{
-                border: "1px solid #bbb",
-                borderRadius: 8,
-                padding: 16,
-                minHeight: 80,
-                marginBottom: 16,
-              }}
-            >
+            <h2 className={styles.inquiryModalTitle}>문의 답변</h2>
+            <div className={styles.inquiryContent}>
               {selectedInquiry.content}
             </div>
             <textarea
               value={inquiryAnswer}
               onChange={(e) => setInquiryAnswer(e.target.value)}
               placeholder="답변을 입력하세요..."
-              style={{
-                width: "100%",
-                minHeight: 100,
-                padding: 12,
-                border: "1px solid #ddd",
-                borderRadius: 6,
-                marginBottom: 16,
-                resize: "vertical",
-              }}
+              className={styles.inquiryTextarea}
             />
-            <div style={{ display: "flex", gap: 8 }}>
+            <div className={styles.inquiryActionRow}>
               <button
                 onClick={() => handleInquiryResponse("답변이 저장되었습니다!")}
-                style={{
-                  flex: 1,
-                  background: "#007BFF",
-                  color: "white",
-                  border: "none",
-                  borderRadius: 6,
-                  padding: 12,
-                  fontWeight: 600,
-                  fontSize: 16,
-                  cursor: "pointer",
-                }}
+                className={styles.inquiryActionBtn}
               >
                 답변 저장
               </button>
@@ -266,23 +237,7 @@ export default function ReportPage() {
         </div>
       )}
       {/* 6) 토스트 메시지 */}
-      {showToast && (
-        <div
-          style={{
-            position: "fixed",
-            bottom: 20,
-            left: "50%",
-            transform: "translateX(-50%)",
-            background: "#333",
-            color: "white",
-            padding: "12px 24px",
-            borderRadius: 6,
-            zIndex: 1000,
-          }}
-        >
-          {toastMsg}
-        </div>
-      )}
+      {showToast && <div className={styles.toastContainer}>{toastMsg}</div>}
       {/* 이미지 미리보기 모달 */}
       {showImageModal && (
         <div
@@ -290,8 +245,7 @@ export default function ReportPage() {
           onClick={() => setShowImageModal(false)}
         >
           <div
-            className={styles.modalContent}
-            style={{ maxWidth: 400, minWidth: 200, textAlign: "center" }}
+            className={`${styles.modalContent} ${styles.imageModalContent}`}
             onClick={(e) => e.stopPropagation()}
           >
             <button
@@ -300,11 +254,11 @@ export default function ReportPage() {
             >
               ×
             </button>
-            <h3 style={{ marginBottom: 12 }}>첨부 이미지</h3>
+            <h3 className={styles.imageModalTitle}>첨부 이미지</h3>
             <img
               src={modalImageUrl}
               alt="첨부 이미지"
-              style={{ maxWidth: "100%", maxHeight: 350, borderRadius: 8 }}
+              className={styles.imageModalImg}
             />
           </div>
         </div>

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
-import styles from "../css/MainPage.module.css";
+import styles from "../css/AdminMainPage.module.css";
 import { getReports } from "../api/report";
 import { getInquiry } from "../api/inquiry";
 import ReportModal from "./ReportModal";
@@ -30,13 +30,7 @@ export default function AdminMainPage() {
         <img
           src="/images/HATWlogo.png"
           alt="HATW 로고"
-          style={{
-            width: "100%",
-            maxWidth: 200,
-            height: "auto",
-            display: "block",
-            margin: "0 auto 24px auto",
-          }}
+          className={styles.logo}
         />
         <div className={styles.cardGrid}>
           <Link to="/map" className={styles.card}>
@@ -49,8 +43,7 @@ export default function AdminMainPage() {
           </Link>
           <Link
             to="/report"
-            className={styles.card}
-            style={{ position: "relative" }}
+            className={`${styles.card} ${styles.cardWithBadge}`}
           >
             <img
               src="/images/icon-report.png"

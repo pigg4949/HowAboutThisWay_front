@@ -126,21 +126,67 @@ const slides = [
     content: (
       <ul className={styles.helpSlideList}>
         <li className={styles.helpSlideListItem}>
-          <span style={{ fontSize: 20 }}>🚧</span> 사용자 주의구역을 표시합니다
+          <img
+            src="/markers/icon-elevator.png"
+            alt="엘리베이터 아이콘"
+            className={styles.helpListIcon}
+          />{" "}
+          엘리베이터 위치를 표시합니다
         </li>
         <li className={styles.helpSlideListItem}>
-          <span style={{ fontSize: 20 }}>🚻</span> 장애인 화장실을 표시합니다
+          <img
+            src="/markers/icon-escalator.png"
+            alt="에스컬레이터 아이콘"
+            className={styles.helpListIcon}
+          />{" "}
+          에스컬레이터 위치를 표시합니다
         </li>
         <li className={styles.helpSlideListItem}>
-          <span style={{ fontSize: 20 }}>🔋</span> 휠체어 충전소 위치를
-          표시합니다
+          <img
+            src="/markers/icon-ev.png"
+            alt="휠체어 충전소 아이콘"
+            className={styles.helpListIcon}
+          />{" "}
+          휠체어 충전소 위치를 표시합니다
         </li>
         <li className={styles.helpSlideListItem}>
-          <span style={{ fontSize: 20 }}>📍</span> 사용자가 제보한 위치를
-          표시합니다
+          <img
+            src="/markers/icon-toilet.png"
+            alt="장애인 화장실 아이콘"
+            className={styles.helpListIcon}
+          />{" "}
+          장애인 화장실 위치를 표시합니다
+        </li>
+      </ul>
+    ),
+  },
+  // 6. 통행에 불편한 곳 안내 슬라이드
+  {
+    content: (
+      <ul className={styles.helpSlideList}>
+        <li className={styles.helpSlideListItem}>
+          <img
+            src="/markers/icon-level-gap.png"
+            alt="단차 아이콘"
+            className={styles.helpListIcon}
+          />{" "}
+          단차로 통행이 불편한 곳을 표시합니다
         </li>
         <li className={styles.helpSlideListItem}>
-          <span style={{ fontSize: 20 }}>⚠️</span> 사용자 위험구역을 표시합니다
+          <img
+            src="/markers/icon-stairs.png"
+            alt="계단 아이콘"
+            className={styles.helpListIcon}
+          />{" "}
+          계단 위치를 표시합니다
+        </li>
+        <li className={styles.helpSlideListItem}>
+          <img
+            src="/markers/icon-narrow-sidewalk.png"
+            alt="보도 폭 좁은 곳 아이콘"
+            className={styles.helpListIcon}
+          />{" "}
+          보도 폭이 좁은 곳을 표시합니다
         </li>
       </ul>
     ),
@@ -162,18 +208,7 @@ export default function HelpModal({ open, onClose }) {
   return (
     <div className={styles.helpModalOverlay}>
       <div className={styles.helpModalContent}>
-        <div
-          style={{
-            minHeight: 210,
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            position: "relative",
-            width: "100%",
-          }}
-        >
-          {slides[page].content}
-        </div>
+        <div className={styles.helpSlideContent}>{slides[page].content}</div>
         <div className={styles.helpModalNav}>
           <button
             onClick={handlePrev}
@@ -200,15 +235,8 @@ export default function HelpModal({ open, onClose }) {
             &gt;
           </button>
         </div>
-        <div
-          style={{
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "space-between",
-            marginTop: 10,
-          }}
-        >
-          <label style={{ fontSize: 14 }}>
+        <div className={styles.helpModalFooter}>
+          <label className={styles.helpModalCheckboxLabel}>
             <input
               type="checkbox"
               checked={dontShow}
@@ -216,18 +244,7 @@ export default function HelpModal({ open, onClose }) {
             />
             다시 보지 않기
           </label>
-          <button
-            onClick={handleClose}
-            style={{
-              background: "none",
-              border: "none",
-              fontSize: 18,
-              color: "#e74c3c",
-              cursor: "pointer",
-              padding: "4px 12px",
-              borderRadius: 8,
-            }}
-          >
+          <button onClick={handleClose} className={styles.helpModalCloseBtn}>
             닫기
           </button>
         </div>

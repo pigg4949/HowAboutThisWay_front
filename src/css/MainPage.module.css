@@ -8,6 +8,15 @@
   justify-content: flex-start;
   flex-grow: 1;
 }
+
+.logo {
+  width: 100%;
+  max-width: 200px;
+  height: auto;
+  display: block;
+  margin: 0 auto 24px auto;
+}
+
 .compass {
   position: absolute;
   top: 100px;
@@ -70,6 +79,7 @@
   align-items: center;
   justify-content: center;
   z-index: 1000;
+  pointer-events: auto;
 }
 .modalContent {
   width: calc(100% - 28px);
@@ -82,6 +92,7 @@
   flex-direction: column;
   align-items: stretch;
   box-sizing: border-box;
+  pointer-events: auto;
 }
 .modalClose {
   position: absolute;
@@ -149,6 +160,10 @@
 .buttonPrimary:hover,
 .modal-close:hover {
   opacity: 0.85;
+}
+
+.hiddenFileInput {
+  display: none;
 }
 
 .badge {

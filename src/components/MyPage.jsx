@@ -177,19 +177,17 @@ export default function MyPage() {
               const items = list.map((item, idx) => (
                 <li key={item.idx || idx} className={styles.historyItem}>
                   <span
-                    className={styles.statusDot}
-                    style={{
-                      background:
-                        activeTab === "report"
-                          ? item.status === "APPROVED"
-                            ? "#b2f2bb"
-                            : item.status === "REJECTED"
-                            ? "#ffc9c9"
-                            : "#ccc"
-                          : item.adminResponses
-                          ? "#b2f2bb"
-                          : "#ccc",
-                    }}
+                    className={`${styles.statusDot} ${
+                      activeTab === "report"
+                        ? item.status === "APPROVED"
+                          ? styles.statusDotApproved
+                          : item.status === "REJECTED"
+                          ? styles.statusDotRejected
+                          : styles.statusDotPending
+                        : item.adminResponses
+                        ? styles.statusDotApproved
+                        : styles.statusDotPending
+                    }`}
                   ></span>
                   <span
                     className={`${styles.historyContent} ${styles.historyContentFlex}`}
@@ -272,19 +270,17 @@ export default function MyPage() {
                     }}
                   >
                     <span
-                      className={styles.statusDot}
-                      style={{
-                        background:
-                          activeTab === "report"
-                            ? item.status === "APPROVED"
-                              ? "#b2f2bb"
-                              : item.status === "REJECTED"
-                              ? "#ffc9c9"
-                              : "#ccc"
-                            : item.adminResponses
-                            ? "#b2f2bb"
-                            : "#ccc",
-                      }}
+                      className={`${styles.statusDot} ${
+                        activeTab === "report"
+                          ? item.status === "APPROVED"
+                            ? styles.statusDotApproved
+                            : item.status === "REJECTED"
+                            ? styles.statusDotRejected
+                            : styles.statusDotPending
+                          : item.adminResponses
+                          ? styles.statusDotApproved
+                          : styles.statusDotPending
+                      }`}
                     ></span>
                     <span
                       className={`${styles.historyContent} ${styles.historyContentFlex}`}
@@ -309,9 +305,8 @@ export default function MyPage() {
           onClick={() => setShowDetailModal(false)}
         >
           <div
-            className={styles.modalContent}
+            className={styles.detailModalContent}
             onClick={(e) => e.stopPropagation()}
-            style={{ maxWidth: 380, minWidth: 280 }}
           >
             <button
               className={styles.modalClose}
@@ -319,36 +314,23 @@ export default function MyPage() {
             >
               ×
             </button>
-            <h2 style={{ textAlign: "center", marginBottom: 16 }}>
+            <h2 className={styles.detailModalTitle}>
               {activeTab === "report" ? "제보 상세" : "문의 상세"}
             </h2>
 
             {activeTab === "report" && selectedItem.imageUrl && (
-              <div style={{ marginBottom: 16 }}>
+              <div>
                 <img
                   src={selectedItem.imageUrl}
                   alt="제보 이미지"
-                  style={{
-                    width: "100%",
-                    maxHeight: 200,
-                    objectFit: "cover",
-                    borderRadius: 8,
-                    border: "1px solid #ddd",
-                  }}
+                  className={styles.detailModalImage}
                 />
               </div>
             )}
 
-            <div style={{ marginBottom: 16 }}>
-              <div style={{ fontWeight: 600, marginBottom: 8 }}>내용</div>
-              <div
-                style={{
-                  background: "#f7f7f7",
-                  borderRadius: 8,
-                  padding: 12,
-                  minHeight: 48,
-                }}
-              >
+            <div className={styles.detailModalSection}>
+              <div className={styles.detailModalSectionTitle}>내용</div>
+              <div className={styles.detailModalSectionBox}>
                 {activeTab === "report"
                   ? selectedItem.comment
                   : selectedItem.content}
@@ -356,21 +338,18 @@ export default function MyPage() {
             </div>
 
             {activeTab === "report" && (
-              <div style={{ marginBottom: 16 }}>
-                <div style={{ fontWeight: 600, marginBottom: 8 }}>상태</div>
+              <div className={styles.detailModalSection}>
+                <div className={styles.detailModalSectionTitle}>상태</div>
                 <div
-                  style={{
-                    background: "#f7f7f7",
-                    borderRadius: 8,
-                    padding: 12,
-                    color:
-                      selectedItem.status === "APPROVED"
-                        ? "#28a745"
-                        : selectedItem.status === "REJECTED"
-                        ? "#dc3545"
-                        : "#6c757d",
-                    fontWeight: 600,
-                  }}
+                  className={
+                    styles.detailModalStatusBox +
+                    " " +
+                    (selectedItem.status === "APPROVED"
+                      ? styles.detailModalStatusApproved
+                      : selectedItem.status === "REJECTED"
+                      ? styles.detailModalStatusRejected
+                      : styles.detailModalStatusPending)
+                  }
                 >
                   {selectedItem.status === "APPROVED"
                     ? "승인됨"
@@ -382,18 +361,11 @@ export default function MyPage() {
             )}
 
             {activeTab === "inquiry" && (
-              <div>
-                <div style={{ fontWeight: 600, marginBottom: 8 }}>
+              <div className={styles.detailModalSection}>
+                <div className={styles.detailModalSectionTitle}>
                   관리자 답변
                 </div>
-                <div
-                  style={{
-                    background: "#f7f7f7",
-                    borderRadius: 8,
-                    padding: 12,
-                    minHeight: 48,
-                  }}
-                >
+                <div className={styles.detailModalSectionBox}>
                   {selectedItem.adminResponses
                     ? selectedItem.adminResponses
                     : "아직 답변이 등록되지 않았습니다."}
@@ -403,26 +375,15 @@ export default function MyPage() {
 
             {/* 제보 수정 버튼 (대기중인 제보만) */}
             {activeTab === "report" && selectedItem.status === "PENDING" && (
-              <div style={{ marginTop: 16 }}>
-                <button
-                  onClick={() => {
-                    setShowDetailModal(false);
-                    setShowEditModal(true);
-                  }}
-                  style={{
-                    width: "100%",
-                    padding: "12px",
-                    backgroundColor: "#007bff",
-                    color: "white",
-                    border: "none",
-                    borderRadius: "8px",
-                    fontSize: "16px",
-                    cursor: "pointer",
-                  }}
-                >
-                  제보 수정
-                </button>
-              </div>
+              <button
+                className={styles.detailModalEditBtn}
+                onClick={() => {
+                  setShowDetailModal(false);
+                  setShowEditModal(true);
+                }}
+              >
+                제보 수정
+              </button>
             )}
           </div>
         </div>

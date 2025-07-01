@@ -42,6 +42,7 @@
   margin-top: 16px;
   margin-bottom: 8px;
   font-size: 14px;
+  font-weight: bold;
 }
 .formContainer input {
   width: 100%;
@@ -101,10 +102,11 @@
 .findInfoLink {
   display: block;
   margin-top: 16px;
-  font-size: 14px;
+  font-size: 18px;
   color: var(--textColor);
   text-decoration: none;
   text-align: center;
+  font-weight: bold;
 }
 
 /* 7) 키프레임 (index.css) */

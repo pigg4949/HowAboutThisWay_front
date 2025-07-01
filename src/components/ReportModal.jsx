@@ -144,8 +144,8 @@ export default function ReportModal({ onClose }) {
   };
 
   return (
-    <div className={styles.modalOverlay} style={{ pointerEvents: "auto" }}>
-      <div className={styles.modalContent} style={{ pointerEvents: "auto" }}>
+    <div className={styles.modalOverlay}>
+      <div className={styles.modalContent}>
         <button className={styles.modalClose} onClick={onClose}>
           &times;
         </button>
@@ -216,7 +216,7 @@ export default function ReportModal({ onClose }) {
                 type="file"
                 accept="image/*"
                 onChange={handleImageChange}
-                style={{ display: "none" }}
+                className={styles.hiddenFileInput}
               />
             </label>
             <button type="submit" className={styles.buttonPrimary}>

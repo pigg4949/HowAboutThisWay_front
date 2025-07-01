@@ -346,7 +346,9 @@ export default function SignupPage() {
               </button>
             </div>
             {codeSent && (
-              <div className={styles.inputWithButton} style={{ marginTop: 8 }}>
+              <div
+                className={`${styles.inputWithButton} ${styles.inputWithButtonMargin}`}
+              >
                 <input
                   type="text"
                   value={code}
@@ -361,7 +363,7 @@ export default function SignupPage() {
                 >
                   확인
                 </button>
-                <span style={{ marginLeft: 8, fontSize: 13 }}>
+                <span className={styles.timerSpan}>
                   {Math.floor(timeLeft / 60)}:
                   {(timeLeft % 60).toString().padStart(2, "0")}
                 </span>

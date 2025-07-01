@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { updateReportImage, updateReport } from "../api/report";
-import styles from "../css/MainPage.module.css";
+import styles from "../css/ReportEditModal.module.css";
 
 export default function ReportEditModal({ report, onClose, onUpdate }) {
   const [content, setContent] = useState(report.comment || "");
@@ -42,28 +42,17 @@ export default function ReportEditModal({ report, onClose, onUpdate }) {
   };
 
   return (
-    <div className={styles.modalOverlay} style={{ pointerEvents: "auto" }}>
-      <div className={styles.modalContent} style={{ pointerEvents: "auto" }}>
+    <div className={styles.modalOverlay}>
+      <div className={styles.modalContent}>
         <button className={styles.modalClose} onClick={onClose}>
           &times;
         </button>
         <h2 className={styles.modalTitle}>제보 수정</h2>
 
         <form onSubmit={handleSubmit}>
-          <div style={{ marginBottom: 16 }}>
-            <label
-              style={{ display: "block", marginBottom: 8, fontWeight: 600 }}
-            >
-              분류
-            </label>
-            <div
-              style={{
-                background: "#f7f7f7",
-                borderRadius: 8,
-                padding: 12,
-                color: "#666",
-              }}
-            >
+          <div className={styles.formGroup}>
+            <label className={styles.formLabel}>분류</label>
+            <div className={styles.formField}>
               {report.type === "5" && "단차 큼"}
               {report.type === "6" && "보도 폭 좁음"}
               {report.type === "toilet" && "장애인 화장실"}
@@ -71,31 +60,15 @@ export default function ReportEditModal({ report, onClose, onUpdate }) {
             </div>
           </div>
 
-          <div style={{ marginBottom: 16 }}>
-            <label
-              style={{ display: "block", marginBottom: 8, fontWeight: 600 }}
-            >
-              위치
-            </label>
-            <div
-              style={{
-                background: "#f7f7f7",
-                borderRadius: 8,
-                padding: 12,
-                color: "#666",
-                fontSize: 14,
-              }}
-            >
+          <div className={styles.formGroup}>
+            <label className={styles.formLabel}>위치</label>
+            <div className={styles.formFieldLocation}>
               경도: {report.lon?.toFixed(6)}, 위도: {report.lat?.toFixed(6)}
             </div>
           </div>
 
-          <div style={{ marginBottom: 16 }}>
-            <label
-              style={{ display: "block", marginBottom: 8, fontWeight: 600 }}
-            >
-              내용
-            </label>
+          <div className={styles.formGroup}>
+            <label className={styles.formLabel}>내용</label>
             <textarea
               value={content}
               onChange={(e) => setContent(e.target.value)}
@@ -105,55 +78,28 @@ export default function ReportEditModal({ report, onClose, onUpdate }) {
             />
           </div>
 
-          <div style={{ marginBottom: 16 }}>
-            <label
-              style={{ display: "block", marginBottom: 8, fontWeight: 600 }}
-            >
-              현재 이미지
-            </label>
+          <div className={styles.formGroup}>
+            <label className={styles.formLabel}>현재 이미지</label>
             {report.imageUrl ? (
               <img
                 src={report.imageUrl}
                 alt="현재 이미지"
-                style={{
-                  width: "100%",
-                  maxHeight: 200,
-                  objectFit: "cover",
-                  borderRadius: 8,
-                  border: "1px solid #ddd",
-                }}
+                className={styles.currentImage}
               />
             ) : (
-              <div
-                style={{
-                  background: "#f7f7f7",
-                  borderRadius: 8,
-                  padding: 40,
-                  textAlign: "center",
-                  color: "#999",
-                }}
-              >
-                이미지 없음
-              </div>
+              <div className={styles.noImage}>이미지 없음</div>
             )}
           </div>
 
-          <div style={{ marginBottom: 16 }}>
-            <label
-              style={{ display: "block", marginBottom: 8, fontWeight: 600 }}
-            >
+          <div className={styles.formGroup}>
+            <label className={styles.formLabel}>
               새 이미지 업로드 (선택사항)
             </label>
             <input
               type="file"
               accept="image/*"
               onChange={handleImageChange}
-              style={{
-                width: "100%",
-                padding: 8,
-                border: "1px solid #ddd",
-                borderRadius: 4,
-              }}
+              className={styles.fileInput}
             />
           </div>
 

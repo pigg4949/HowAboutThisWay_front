@@ -805,50 +805,21 @@ export default function MapPage() {
         </div>
         {/* 마커 패널 */}
         {showMarkerPanel && (
-          <div
-            ref={markerPanelRef}
-            style={{
-              position: "absolute",
-              top: "calc(30% - 15px)",
-              right: 95,
-              width: 210,
-              background: "rgba(255,255,255,0.8)",
-              borderRadius: 18,
-              boxShadow: "0 2px 16px rgba(0,0,0,0.13)",
-              padding: "18px 0 18px 0",
-              zIndex: 100,
-              display: "flex",
-              flexDirection: "column",
-              alignItems: "flex-start",
-              gap: 18,
-              pointerEvents: "auto",
-            }}
-          >
+          <div ref={markerPanelRef} className={styles.markerPanel}>
             {FACILITY_TYPES.map((f) => (
               <button
                 key={f.type}
-                style={{
-                  display: "flex",
-                  alignItems: "center",
-                  gap: 16,
-                  background: "none",
-                  border: "none",
-                  cursor: "pointer",
-                  padding: "0 18px",
-                  width: "100%",
-                  fontSize: 17,
-                  fontWeight: 500,
-                  color: activeFacilityTypes.includes(f.type)
-                    ? "#d17b00"
-                    : "#222",
-                  outline: "none",
-                }}
+                className={`${styles.markerPanelBtn} ${
+                  activeFacilityTypes.includes(f.type)
+                    ? styles.markerPanelBtnActive
+                    : ""
+                }`}
                 onClick={() => handleFacilityBtnClick(f.type)}
               >
                 <img
                   src={f.icon}
                   alt={f.label}
-                  style={{ width: 38, height: 38, marginRight: 2 }}
+                  className={styles.markerPanelIcon}
                 />
                 <span>{f.label}</span>
               </button>
@@ -858,77 +829,31 @@ export default function MapPage() {
         {/* 경로 안내 슬라이드 패널 */}
         <div
           ref={routePanelRef}
-          style={{
-            position: "absolute",
-            left: 0,
-            right: 0,
-            bottom: 0,
-            zIndex: 201,
-            transition:
-              "transform 0.35s cubic-bezier(.4,1.3,.5,1), height 0.35s cubic-bezier(.4,1.3,.5,1), padding 0.2s",
-            transform: showRoutePanel ? "translateY(0%)" : "translateY(100%)",
-            background: "rgba(255,255,255,0.97)",
-            borderTopLeftRadius: showRoutePanel ? 18 : 0,
-            borderTopRightRadius: showRoutePanel ? 18 : 0,
-            boxShadow: showRoutePanel ? "0 -2px 16px rgba(0,0,0,0.08)" : "none",
-            minHeight: 0,
-            height: showRoutePanel ? "35vh" : 0,
-            maxHeight: "35vh",
-            overflowY: showRoutePanel ? "auto" : "hidden",
-            padding: showRoutePanel ? 20 : 0,
-            pointerEvents: showRoutePanel ? "auto" : "none",
-          }}
+          className={
+            styles.routePanel +
+            " " +
+            (showRoutePanel ? styles.routePanelOpen : styles.routePanelClosed)
+          }
         >
           <div
-            style={{
-              width: 40,
-              height: 5,
-              borderRadius: 3,
-              background: "#ccc",
-              margin: "8px auto 16px auto",
-              cursor: "pointer",
-            }}
+            className={styles.routePanelHandle}
             onClick={() => setShowRoutePanel(false)}
           />
-          <div
-            style={{
-              textAlign: "center",
-              fontWeight: 600,
-              fontSize: 16,
-              marginBottom: 10,
-            }}
-          >
-            경로 안내
-          </div>
-          <div style={{ position: "relative", minHeight: 0 }}>
-            <ul
-              style={{
-                padding: 0,
-                margin: 0,
-                listStyle: "none",
-                paddingBottom: 64,
-              }}
-            >
-              {/* 이 부분은 자연어 처리 부분입니다. */}
+          <div className={styles.routePanelTitle}>경로 안내</div>
+          <div className={styles.routePanelContent}>
+            <ul className={styles.routePanelList}>
               {instructionsLoading ? (
-                <li style={{ color: "#888", fontStyle: "italic" }}>
-                  안내문 생성 중...
-                </li>
+                <li className={styles.routePanelLoading}>안내문 생성 중...</li>
               ) : instructions.length > 0 ? (
                 instructions.map((instruction, idx) => (
                   <li
                     key={`instruction-${idx}`}
-                    style={{
-                      padding: "8px 0",
-                      borderBottom: "1px solid #eee",
-                      fontSize: 15,
-                    }}
+                    className={styles.routePanelListItem}
                   >
                     {instruction}
                   </li>
                 ))
               ) : (
-                // fallback: 기존 방식
                 (() => {
                   const route = routes[selectedRouteIdx];
                   if (!route) return null;
@@ -941,11 +866,7 @@ export default function MapPage() {
                         items.push(
                           <li
                             key={`leg${lidx}-step${sidx}`}
-                            style={{
-                              padding: "8px 0",
-                              borderBottom: "1px solid #eee",
-                              fontSize: 15,
-                            }}
+                            className={styles.routePanelListItem}
                           >
                             {step.description}
                           </li>
@@ -955,11 +876,7 @@ export default function MapPage() {
                       items.push(
                         <li
                           key={`leg${lidx}`}
-                          style={{
-                            padding: "8px 0",
-                            borderBottom: "1px solid #eee",
-                            fontSize: 15,
-                          }}
+                          className={styles.routePanelListItem}
                         >
                           {leg.mode} {leg.name ? `(${leg.name})` : ""}{" "}
                           {leg.distance ? `- ${leg.distance}m 이동` : ""}
@@ -976,21 +893,7 @@ export default function MapPage() {
         {!showRoutePanel &&
           routes[selectedRouteIdx]?.instructions?.length > 0 && (
             <button
-              style={{
-                position: "absolute",
-                left: "50%",
-                bottom: 18,
-                transform: "translateX(-50%)",
-                zIndex: 31,
-                background: "#FFFBE7",
-                border: "1.5px solid #F5D492",
-                borderRadius: 16,
-                padding: "8px 22px",
-                fontWeight: 600,
-                fontSize: 15,
-                boxShadow: "0 2px 8px rgba(0,0,0,0.07)",
-                cursor: "pointer",
-              }}
+              className={styles.routePanelShowBtn}
               onClick={() => setShowRoutePanel(true)}
             >
               경로 안내 보기

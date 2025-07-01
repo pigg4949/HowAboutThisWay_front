@@ -1,10 +1,11 @@
 import React, { useEffect, useRef } from "react";
+import styles from "../css/MapView.module.css";
 /**
-* Tmap 지도를 렌더링하는 최소 MapView 컴포넌트
-* @param {object} center - { lat, lng } 형태의 초기 중심 좌표
-* @param {string|number} width - 지도 width (ex: '100%', 400)
-* @param {string|number} height - 지도 height (ex: '100%', 300)
-*/
+ * Tmap 지도를 렌더링하는 최소 MapView 컴포넌트
+ * @param {object} center - { lat, lng } 형태의 초기 중심 좌표
+ * @param {string|number} width - 지도 width (ex: '100%', 400)
+ * @param {string|number} height - 지도 height (ex: '100%', 300)
+ */
 export default function MapView({
   center = { lat: 37.5665, lng: 126.978 },
   width = "100%",
@@ -37,11 +38,10 @@ export default function MapView({
   return (
     <div
       ref={mapRef}
+      className={styles.mapContainer}
       style={{
         width: typeof width === "number" ? `${width}px` : width,
         height: typeof height === "number" ? `${height}px` : height,
-        borderRadius: 8,
-        overflow: "hidden",
       }}
     />
   );

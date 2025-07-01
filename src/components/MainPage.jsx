@@ -27,13 +27,7 @@ export default function MainPage() {
         <img
           src="/images/HATWlogo.png"
           alt="HATW 로고"
-          style={{
-            width: "100%",
-            maxWidth: 200,
-            height: "auto",
-            display: "block",
-            margin: "0 auto 24px auto",
-          }}
+          className={styles.logo}
         />
         <div className={styles.cardGrid}>
           <Link to="/map" className={styles.card}>

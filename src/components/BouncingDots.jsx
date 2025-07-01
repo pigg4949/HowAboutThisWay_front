@@ -1,28 +1,9 @@
 import React from "react";
+import styles from "../css/BouncingDots.module.css";
 
 export default function BouncingDots({ style = {} }) {
   return (
-    <div className="bouncing_dots" style={style}>
-      <style>{`
-        .bouncing_dots {
-          display: flex;
-          gap: 8px;
-          align-items: flex-end;
-        }
-        .bouncing_dots div {
-          width: 10px;
-          height: 10px;
-          background: #333;
-          border-radius: 50%;
-          animation: bounce 0.6s ease-in-out infinite both;
-        }
-        .bouncing_dots div:nth-child(2) { animation-delay: 0.2s; }
-        .bouncing_dots div:nth-child(3) { animation-delay: 0.4s; }
-        @keyframes bounce {
-          0%, 80%, 100% { transform: translateY(0); }
-          40% { transform: translateY(-12px); }
-        }
-      `}</style>
+    <div className={styles.bouncing_dots} style={style}>
       <div></div>
       <div></div>
       <div></div>
