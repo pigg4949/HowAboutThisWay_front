@@ -1,0 +1,366 @@
+.pageWrapper {
+  width: 100%;
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+}
+
+.mapHeader {
+  display: flex;
+  justify-content: space-between;
+  padding: 20px 18px 12px;
+  background: #ede9e0;
+}
+.headerLeft {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+.userTypeBtns {
+  display: flex;
+  gap: 8px;
+}
+.typeBtn {
+  flex: 1;
+  font-size: 12px;
+  padding: 8px 12px;
+  border-radius: 12px;
+  border: 2.3px solid var(--primaryColor);
+  background: var(--primaryColor);
+  color: #3b2b00;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.16s, color 0.13s;
+}
+.typeBtn.active {
+  background: #fff;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+}
+.headerIcons {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+.iconBtn {
+  width: 44px;
+  height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #f5d492;
+  border: none;
+  border-radius: 12px;
+  margin-left: 8px;
+  padding: 0;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+.iconBtn img {
+  width: 24px;
+  height: 24px;
+}
+.iconBtn:active {
+  background: #ffe0a3;
+}
+
+.inputArea {
+  margin-top: 10px;
+}
+.inputRow {
+  display: flex;
+  align-items: center;
+  margin-bottom: 8px;
+}
+.inputRow:last-child {
+  margin-bottom: 0;
+}
+.input {
+  flex: 1;
+  height: 44px;
+  padding: 0 12px;
+  border-radius: 12px;
+  background: #fff;
+  border: none;
+  font-size: 16px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.mapArea {
+  position: relative;
+  flex: 1;
+  max-height: calc(100vh - 245px);
+  min-height: 300px;
+}
+.realMap {
+  width: 100%;
+  height: 100%;
+}
+
+.mapError {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background: #f5f5f5;
+  color: #666;
+  text-align: center;
+}
+
+.mapError p {
+  margin: 8px 0;
+  font-size: 16px;
+}
+
+.mapFixedBtns {
+  position: absolute;
+  top: 45%;
+  right: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  z-index: 200;
+}
+.fixedBtn {
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: background 0.15s, box-shadow 0.15s;
+}
+.fixedBtn:hover {
+  /* background: #ffe0a3; */
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
+}
+.fixedBtn img {
+  width: 56px;
+  height: 56px;
+  object-fit: contain;
+}
+
+.fixedBtnActive {
+  background: #b2e2ff;
+  /* 밝은 파랑, 필요시 색상 조정 */
+}
+
+.bottomNav {
+  position: absolute;
+  bottom: 0;
+  width: 100%;
+  height: 58px;
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  background: #fff;
+  border-top: 1px solid #ddd;
+}
+.navItem {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.navItem img {
+  width: 29px;
+  height: 29px;
+  filter: grayscale(100%) brightness(0.13);
+  opacity: 0.92;
+}
+.navItem.active img {
+  filter: none;
+  opacity: 1;
+}
+
+.mapErrorMessage {
+  padding: 20px;
+  text-align: center;
+}
+
+.inputRowRelative {
+  position: relative;
+}
+
+.dropdownList {
+  position: absolute;
+  top: 48px;
+  left: 0;
+  right: 0;
+  z-index: 20;
+  background: #fff;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  max-height: 180px;
+  overflow-y: auto;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.dropdownItem {
+  padding: 8px;
+  cursor: pointer;
+}
+
+.loadingOverlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(255, 255, 255, 0.6);
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.routeSelectBtn {
+  position: absolute;
+  left: 50%;
+  bottom: 41vh;
+  transform: translateX(-50%);
+  z-index: 50;
+  background: #fffbe7;
+  border: 1.5px solid #f5d492;
+  border-radius: 16px;
+  padding: 8px 22px;
+  font-weight: 600;
+  font-size: 15px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.07);
+  cursor: pointer;
+}
+
+.routePanel {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 201;
+  transition: transform 0.35s cubic-bezier(0.4, 1.3, 0.5, 1),
+    height 0.35s cubic-bezier(0.4, 1.3, 0.5, 1), padding 0.2s;
+  background: rgba(255, 255, 255, 0.97);
+  min-height: 0;
+  max-height: 35vh;
+  overflow-y: hidden;
+  pointer-events: none;
+}
+.routePanelOpen {
+  transform: translateY(0%);
+  border-top-left-radius: 18px;
+  border-top-right-radius: 18px;
+  box-shadow: 0 -2px 16px rgba(0, 0, 0, 0.08);
+  height: 35vh;
+  padding: 20px;
+  overflow-y: auto;
+  pointer-events: auto;
+}
+.routePanelClosed {
+  transform: translateY(100%);
+  border-top-left-radius: 0;
+  border-top-right-radius: 0;
+  box-shadow: none;
+  height: 0;
+  padding: 0;
+  overflow-y: hidden;
+  pointer-events: none;
+}
+.routePanelHandle {
+  width: 40px;
+  height: 5px;
+  border-radius: 3px;
+  background: #ccc;
+  margin: 8px auto 16px auto;
+  cursor: pointer;
+}
+.routePanelTitle {
+  text-align: center;
+  font-weight: 600;
+  font-size: 16px;
+  margin-bottom: 10px;
+}
+.routePanelList {
+  padding: 0;
+  margin: 0;
+  list-style: none;
+  padding-bottom: 64px;
+}
+.routePanelListItem {
+  padding: 8px 0;
+  border-bottom: 1px solid #eee;
+  font-size: 15px;
+}
+.routePanelLoading {
+  color: #888;
+  font-style: italic;
+}
+.routePanelShowBtn {
+  position: absolute;
+  left: 50%;
+  bottom: 18px;
+  transform: translateX(-50%);
+  z-index: 31;
+  background: #fffbe7;
+  border: 1.5px solid #f5d492;
+  border-radius: 16px;
+  padding: 8px 22px;
+  font-weight: 600;
+  font-size: 15px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.07);
+  cursor: pointer;
+}
+
+.markerPanel {
+  position: absolute;
+  top: calc(30% - 15px);
+  right: 95px;
+  width: 210px;
+  background: rgba(255, 255, 255, 0.8);
+  border-radius: 18px;
+  box-shadow: 0 2px 16px rgba(0, 0, 0, 0.13);
+  padding: 18px 0 18px 0;
+  z-index: 100;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 18px;
+  pointer-events: auto;
+}
+
+.markerPanelBtn {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0 18px;
+  width: 100%;
+  font-size: 17px;
+  font-weight: 500;
+  color: #222;
+  outline: none;
+}
+
+.markerPanelBtnActive {
+  color: #d17b00;
+}
+
+.markerPanelIcon {
+  width: 38px;
+  height: 38px;
+  margin-right: 2px;
+}
+
+.routePanelContent {
+  position: relative;
+  min-height: 0;
+}
+
+

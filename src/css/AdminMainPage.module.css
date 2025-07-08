@@ -1,0 +1,150 @@
+.container {
+  width: 100%;
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+  padding: 24px;
+  box-sizing: border-box;
+}
+
+.header {
+  font-size: 24px;
+  font-weight: bold;
+  margin-bottom: 24px;
+}
+
+.sectionGroup {
+  margin-bottom: 24px;
+}
+
+.sectionTitle {
+  font-size: 18px;
+  font-weight: bold;
+  margin-bottom: 16px;
+}
+
+.reportList,
+.userList {
+  list-style: none;
+  padding: 0;
+}
+
+.reportCard,
+.userCard {
+  background: #fff;
+  padding: 16px;
+  border-radius: 8px;
+  margin-bottom: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.reportLink {
+  text-decoration: none;
+  color: #333;
+}
+
+.adminNav {
+  margin-top: auto;
+  padding-top: 16px;
+  border-top: 1px solid #eee;
+  display: flex;
+  gap: 16px;
+}
+
+.navLink {
+  text-decoration: none;
+  color: #007bff;
+}
+
+.main {
+  position: relative;
+  width: 100%;
+  background: url("/images/background.jpg") no-repeat center center/cover;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  flex-grow: 1;
+}
+
+.logo {
+  width: 100%;
+  max-width: 200px;
+  height: auto;
+  display: block;
+  margin: 0 auto 24px auto;
+}
+
+.cardGrid {
+  display: grid;
+  grid-template-columns: repeat(2, 120px);
+  gap: 15px;
+  justify-content: center;
+  align-content: center;
+  margin-top: 150px;
+}
+
+.card {
+  background-color: rgba(255, 255, 255, 0.9);
+  border-radius: 12px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  text-decoration: none;
+  color: #333;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 120px;
+  padding: 10px;
+  box-sizing: border-box;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  border: none;
+  cursor: pointer;
+}
+
+.card:hover {
+  transform: scale(1.06);
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+}
+
+.cardWithBadge {
+  position: relative;
+}
+
+.icon {
+  width: 40px;
+  height: 40px;
+  object-fit: contain;
+}
+
+.label {
+  margin-top: 8px;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.smallLabel {
+  margin-top: 2px;
+  font-size: 10px;
+  color: #666;
+}
+
+.badge {
+  position: absolute;
+  top: -10px;
+  right: -5px;
+  background: #e74c3c;
+  color: #fff;
+  border-radius: 50%;
+  width: 20px;
+  height: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 13px;
+  font-weight: bold;
+  z-index: 2;
+  border: 2px solid #fff;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.13);
+  padding: 0 6px;
+}

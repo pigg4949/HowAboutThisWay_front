@@ -1,0 +1,80 @@
+.modalContainer {
+  position: fixed;
+  left: 0;
+  top: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.35);
+  z-index: 10000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.modalContent {
+  background: #fff;
+  border-radius: 12px;
+  padding: 24px;
+  min-width: 320px;
+  max-width: 400px;
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.13);
+}
+
+.modalTitle {
+  margin-bottom: 10px;
+  font-size: 20px;
+  text-align: center;
+}
+
+.sortSelectContainer {
+  margin-bottom: 16px;
+  text-align: right;
+}
+
+.sortSelect {
+  font-size: 14px;
+  padding: 4px 10px;
+  border-radius: 6px;
+}
+
+.routeListContainer {
+  max-height: 350px;
+  overflow-y: auto;
+}
+
+.routeItem {
+  border: 1px solid #eee;
+  border-radius: 8px;
+  padding: 14px;
+  margin-bottom: 12px;
+  background: #faf9f6;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+.routeItemHover {
+  background: #f0f0f0 !important;
+  transform: translateY(-1px) !important;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1) !important;
+}
+
+.routeIndex {
+  font-weight: 600;
+  margin-bottom: 6px;
+}
+
+.routeInfo {
+  font-size: 15px;
+  margin-bottom: 4px;
+  color: #666;
+}
+
+.closeButton {
+  margin-top: 10px;
+  width: 100%;
+  padding: 8px 0;
+  border-radius: 8px;
+  background: #eee;
+  border: none;
+  font-weight: 500;
+  cursor: pointer;
+}

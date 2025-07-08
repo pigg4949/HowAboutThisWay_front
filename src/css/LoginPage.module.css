@@ -1,0 +1,184 @@
+/* 2) 스플래시 로고 (index.css #logo → .logo) */
+.logo {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 32px;
+  font-weight: bold;
+  color: var(--textColor);
+
+  /* 애니메이션: 0–2s 페이드인, 1–2s 위로 이동 */
+  opacity: 0;
+  animation: fadeInLogo 2s ease-out forwards, logoMoveUp 1s ease-out 1s forwards;
+}
+
+/* 3) 로그인 박스 페이드 인 (index.css #loginBox → .loginBox) */
+.loginBox {
+  width: 100%;
+  opacity: 0;
+  transform: translateY(20px);
+  animation: showLogin 1s ease-out 2s forwards;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  flex-grow: 1;
+  padding: 24px;
+  box-sizing: border-box;
+}
+
+/* 4) 폼 컨테이너 레이아웃 (index.css .formContainer 그대로) */
+.formContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  padding: 80px 16px 24px;
+  box-sizing: border-box;
+}
+.formContainer label {
+  align-self: flex-start;
+  margin-top: 16px;
+  margin-bottom: 8px;
+  font-size: 14px;
+  font-weight: bold;
+}
+.formContainer input {
+  width: 100%;
+  height: 48px;
+  padding: 0 16px;
+  margin-bottom: 16px;
+  border: none;
+  border-radius: var(--borderRadius);
+  background-color: var(--cardBackground);
+  font-size: 16px;
+  color: var(--textColor);
+  box-sizing: border-box;
+}
+
+/* 5) 버튼 그룹 (index.css .buttonGroup) */
+.buttonGroup {
+  display: flex;
+  gap: 12px;
+  width: 100%;
+  margin-bottom: 12px;
+}
+.buttonGroup > button,
+.buttonGroup > a {
+  flex: 1;
+  min-width: 0;
+}
+.buttonGroup > a {
+  display: flex;
+}
+.buttonGroup > button,
+.buttonGroup > a > button,
+.buttonPrimary,
+.buttonSecondary {
+  width: 100%;
+  height: 48px;
+  padding: 0 16px;
+  font-size: 16px;
+  line-height: 48px;
+  border: none;
+  border-radius: var(--borderRadius);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+}
+.buttonPrimary {
+  background-color: var(--primaryColor);
+  color: var(--primaryTextColor);
+}
+.buttonSecondary {
+  background-color: var(--cardBackground);
+  color: var(--textColor);
+}
+
+/* 6) 아이디/비밀번호 찾기 링크 (index.css .findInfoLink) */
+.findInfoLink {
+  display: block;
+  margin-top: 16px;
+  font-size: 18px;
+  color: var(--textColor);
+  text-decoration: none;
+  text-align: center;
+  font-weight: bold;
+}
+
+/* 7) 키프레임 (index.css) */
+@keyframes fadeInLogo {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+@keyframes logoMoveUp {
+  to {
+    top: 15%;
+    transform: translate(-50%, 0);
+    opacity: 0.8;
+  }
+}
+@keyframes showLogin {
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.pageWrapper {
+  width: 100%;
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background: url("/images/background.jpg") no-repeat center top/cover;
+  background-size: cover;
+  position: relative;
+}
+
+.logoImg {
+  width: 100%;
+  max-width: 200px;
+  height: auto;
+  display: block;
+  margin: 0 auto;
+}
+
+.loginBtnGrid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  width: 100%;
+  margin-bottom: 8px;
+}
+
+.loginBtn {
+  flex: 1 1 48%;
+  min-width: 0;
+  height: 48px;
+}
+
+.loginBtnLink {
+  flex: 1 1 48%;
+  min-width: 0;
+  height: 48px;
+  display: flex;
+  text-decoration: none;
+}
+
+.loginBtnFull {
+  width: 100%;
+  height: 48px;
+}
+
+.findInfoLinkMargin {
+  margin-top: 16px;
+}
