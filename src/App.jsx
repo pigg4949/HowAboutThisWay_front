@@ -11,6 +11,7 @@ import MapPage from "./components/MapPage";
 import AdminMainPage from "./components/AdminMainPage";
 import KakaoCallback from "./components/KakaoCallback";
 import GoogleCallback from "./components/GoogleCallback";
+import BanUserPage from "./components/BanUserPage";
 
 export default function App() {
   return (
@@ -27,6 +28,8 @@ export default function App() {
       <Route path="/report" element={<ReportPage />} />
       <Route path="/kakao-callback" element={<KakaoCallback />} />
       <Route path="/google-callback" element={<GoogleCallback />} />
+      <Route path="/admin/members" element={<BanUserPage />} />
+      <Route path="/ban-user" element={<BanUserPage />} />
     </Routes>
   );
 }

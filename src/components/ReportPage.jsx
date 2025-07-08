@@ -67,6 +67,16 @@ export default function ReportPage() {
     }
   };
 
+  // 이미지 전체 경로 생성 함수
+  const getFullImageUrl = (url) => {
+    const prefix = "http://localhost:8080";
+    if (!url) return "";
+    if (url.startsWith("/uploads/")) return prefix + url;
+    if (url.startsWith("/reportImgs/")) return prefix + "/uploads" + url;
+    if (url.startsWith("http")) return url;
+    return prefix + "/uploads/" + url.replace(/^\/+/, "");
+  };
+
   return (
     <div className={styles.pageWrapper}>
       {/* 1) 헤더 바 */}
@@ -167,6 +177,16 @@ export default function ReportPage() {
               ×
             </button>
             <h2 className={styles.modalTitleCenter}>불편 제보 관리</h2>
+            <div
+              style={{
+                fontSize: 14,
+                color: "#666",
+                marginBottom: 8,
+                textAlign: "right",
+              }}
+            >
+              작성자: {selectedReport.userId || "알 수 없음"}
+            </div>
             <div className={styles.modalBox}>{selectedReport.comment}</div>
             {selectedReport.imageUrl && (
               <div>
@@ -216,6 +236,16 @@ export default function ReportPage() {
               ×
             </button>
             <h2 className={styles.inquiryModalTitle}>문의 답변</h2>
+            <div
+              style={{
+                fontSize: 14,
+                color: "#666",
+                marginBottom: 8,
+                textAlign: "right",
+              }}
+            >
+              작성자: {selectedInquiry.userId || "알 수 없음"}
+            </div>
             <div className={styles.inquiryContent}>
               {selectedInquiry.content}
             </div>
@@ -256,7 +286,7 @@ export default function ReportPage() {
             </button>
             <h3 className={styles.imageModalTitle}>첨부 이미지</h3>
             <img
-              src={modalImageUrl}
+              src={getFullImageUrl(modalImageUrl)}
               alt="첨부 이미지"
               className={styles.imageModalImg}
             />

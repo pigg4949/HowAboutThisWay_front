@@ -75,7 +75,7 @@ export const getTransitAllWalk = async (params) => {
 // =============================
 // 경로 안내문 자연어 처리 API
 export const processRouteInstructions = async (routeData) => {
-  const res = await axios.post(`${BASE_URL}/process-instructions`, routeData);
+  const res = await axios.post(`${BASE_URL}/editRouteGuidance`, routeData);
   return res.data;
 };
 
@@ -88,7 +88,6 @@ export const getMarkersByTypes = async (types) => {
   });
   return res.data;
 };
-
 
 export const getReportsByTypes = async (types) => {
   const res = await axios.get(`${BASE_URL}/reports`, {

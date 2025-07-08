@@ -1,0 +1,257 @@
+/* BanUserPage용 메인 스타일 - MainPage.module.css와 유사하게 */
+
+.pageWrapper {
+  position: relative;
+  width: 100vw;
+  min-height: 100vh;
+  background: url("/images/background.jpg") no-repeat center center/cover;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  box-sizing: border-box;
+}
+
+.headerBar {
+  width: 100%;
+  max-width: 420px;
+  margin: 0 auto;
+  background: #ede7dd;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 0;
+}
+
+.headerLogo {
+  flex: 1;
+  text-align: left;
+}
+
+.headerLogoImg {
+  width: 48px;
+  height: 48px;
+  object-fit: contain;
+}
+
+.headerTitle {
+  flex: 1;
+  text-align: center;
+  font-size: 18px;
+  font-weight: 600;
+  color: #333;
+}
+
+.headerRight {
+  flex: 1;
+}
+
+.card {
+  background: rgba(255, 255, 255, 0.93);
+  border-radius: 14px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+  margin: 32px 0 70px 0;
+  padding: 32px 24px 24px 24px;
+  width: 100%;
+  max-width: 420px;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  /* 헤더(56px)+타이틀(40px)+마진(32px)+bottomNav(60px)+여유(12px) */
+  max-height: calc(100vh - 56px - 40px - 32px - 60px - 12px);
+  overflow: hidden;
+}
+
+.listTitle {
+  font-size: 18px;
+  font-weight: 800;
+  margin-bottom: 24px;
+  color: #222;
+  text-align: center;
+}
+
+.listContainer {
+  width: 100%;
+  flex: 1 1 0%;
+  overflow-y: auto;
+  max-height: 100%;
+  min-height: 0;
+  padding-bottom: 0;
+}
+
+.userList {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.userItem {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: #f8f8f8;
+  border-radius: 8px;
+  padding: 16px 18px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+  font-size: 16px;
+}
+
+.itemTitle {
+  font-weight: 500;
+  color: #222;
+}
+
+.btnToggle {
+  background: #f0837b;
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  padding: 8px 18px;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.18s;
+}
+.btnToggle:hover {
+  background: #e76a5a;
+}
+
+.btnUnblock {
+  background: #3498db;
+}
+.btnUnblock:hover {
+  background: #217dbb;
+}
+
+.loading {
+  margin: 60px auto;
+  font-size: 18px;
+  color: #888;
+  text-align: center;
+}
+
+.error {
+  margin: 60px auto;
+  font-size: 18px;
+  color: #e74c3c;
+  text-align: center;
+}
+
+.emptyText {
+  color: #aaa;
+  font-size: 15px;
+  text-align: center;
+  margin: 32px 0 0 0;
+}
+
+.bottomNav {
+  position: fixed;
+  left: 0;
+  bottom: 0;
+  width: 100vw;
+  height: 60px;
+  background: rgba(255, 255, 255, 0.97);
+  box-shadow: 0 -2px 8px rgba(0, 0, 0, 0.07);
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+  z-index: 100;
+}
+
+.navItem {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  cursor: pointer;
+  transition: background 0.15s;
+  border: none;
+  background: none;
+}
+
+.navItem img {
+  width: 32px;
+  height: 32px;
+  object-fit: contain;
+}
+
+.navItem:active,
+.navItem:focus {
+  background: #f5f5f5;
+}
+
+/* 모바일(390*844) 반응형 최적화 */
+@media (max-width: 390px) {
+  .pageWrapper {
+    min-width: 100vw;
+    min-height: 100vh;
+    padding: 0;
+    box-sizing: border-box;
+  }
+  .headerBar {
+    max-width: 90vw;
+    padding: 12px 0 8px 0;
+  }
+  .headerLogoImg {
+    width: 36px;
+    height: 36px;
+  }
+  .headerTitle {
+    font-size: 17px;
+  }
+  .card {
+    margin: 18px 0 62px 0;
+    padding: 18px 8px 14px 8px;
+    max-width: 90vw;
+    border-radius: 10px;
+    /* 헤더(44px)+타이틀(28px)+마진(18px)+bottomNav(52px)+여유(8px) */
+    max-height: calc(100vh - 44px - 28px - 18px - 52px - 8px);
+  }
+  .listTitle {
+    font-size: 15px;
+    margin-bottom: 10px;
+  }
+  .userList {
+    gap: 7px;
+  }
+  .userItem {
+    padding: 10px 8px;
+    font-size: 14px;
+    border-radius: 6px;
+  }
+  .itemTitle {
+    font-size: 14px;
+  }
+  .btnToggle {
+    padding: 6px 12px;
+    font-size: 13px;
+    border-radius: 5px;
+  }
+  .bottomNav {
+    height: 52px;
+  }
+  .navItem img {
+    width: 24px;
+    height: 24px;
+  }
+  .loading,
+  .error,
+  .emptyText {
+    font-size: 14px;
+    margin: 18px 0 0 0;
+  }
+  .listContainer {
+    max-height: 100%;
+    min-height: 0;
+    flex: 1 1 0%;
+    padding-bottom: 0;
+  }
+}
+
+.userSearchInput {
+  box-sizing: border-box;
+}

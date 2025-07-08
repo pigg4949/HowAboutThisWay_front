@@ -1,12 +1,12 @@
 /* global Tmapv2 */
 import React, { useEffect, useRef, useState } from "react";
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import styles from "../css/MapPage.module.css";
 import {
   searchPOI,
   getTransitWithConnectorCached,
   getTransitAllWalkCached,
-  processRouteInstructionsCached,
+  processRouteInstructions,
   getMarkersByTypes,
   getReportsByTypes,
 } from "../api/Map";
@@ -14,11 +14,12 @@ import ReportModal from "./ReportModal";
 import RouteSelectModal from "./RouteSelectModal";
 import BouncingDots from "./BouncingDots";
 import InquiryModal from "./InquiryModal";
-import HelpModal from "./HelpModal";
+// import HelpModal from "./HelpModal";
 
 export default function MapPage() {
   const mapRef = useRef(null);
   const mapInstanceRef = useRef(null);
+  const navigate = useNavigate();
   const [mode, setMode] = useState("elder");
   const [start, setStart] = useState("");
   const [end, setEnd] = useState("");
@@ -80,7 +81,7 @@ export default function MapPage() {
       map: mapInstanceRef.current,
       title: loc.name,
       icon: "/markers/pin_r_m_s.png",
-      iconSize: new window.Tmapv2.Size(24, 38),
+      iconSize: new window.Tmapv2.Size(34, 48),
     });
 
     setStartMarker(marker);
@@ -96,7 +97,7 @@ export default function MapPage() {
       map: mapInstanceRef.current,
       title: loc.name,
       icon: "/markers/pin_r_m_e.png",
-      iconSize: new window.Tmapv2.Size(24, 38),
+      iconSize: new window.Tmapv2.Size(34, 48),
     });
 
     setEndMarker(marker);
@@ -288,36 +289,12 @@ export default function MapPage() {
             console.log("[collectDescriptions] descriptions:", descriptions);
             return descriptions;
           };
-          // 현재 경로의 description 수집
+          // 현재 경로의 description 수집 (자연어 처리 제거)
           const rawDescriptions = collectDescriptions(itinerary.legs);
-          // 백엔드로 description 전송하여 자연어 처리
-          let processedInstructions = [];
-          try {
-            const processData = {
-              legs: itinerary.legs,
-              descriptions: rawDescriptions,
-              userType: mode, // "elder" 또는 "wheel"
-              startName: startLocation.name,
-              endName: endLocation.name,
-            };
-            const processedResult = await processRouteInstructionsCached(
-              processData
-            );
-            processedInstructions = processedResult.instructions || [];
-          } catch (error) {
-            console.error("자연어 처리 중 오류:", error);
-            // 자연어 처리 실패 시 기존 방식 사용
-            processedInstructions = itinerary.legs.map((leg, lidx) => {
-              return `${leg.mode || ""} ${leg.name || ""} ${
-                leg.distance ? leg.distance + "m 이동" : ""
-              }`.trim();
-            });
-          }
           newRoutes.push({
             type: "transit",
             data: itinerary,
-            instructions: processedInstructions,
-            rawDescriptions: rawDescriptions, // 원본 description도 보관
+            rawDescriptions: rawDescriptions, // 원본 description만 보관
           });
         }
       }
@@ -369,39 +346,63 @@ export default function MapPage() {
         // from, to, start, end 모두 확인
         const fromName = leg.from?.name || leg.start?.name;
         const toName = leg.to?.name || leg.end?.name;
-        console.log(`[DEBUG] SUBWAY leg[${idx}] from:`, fromName, 'to:', toName, leg);
-        console.log(`[DEBUG] typeof from:`, typeof leg.from, 'typeof to:', typeof leg.to, 'typeof start:', typeof leg.start, 'typeof end:', typeof leg.end);
-        const fromNameStr = fromName ? String(fromName).replace(/역$/, "") : undefined;
-        const toNameStr = toName ? String(toName).replace(/역$/, "") : undefined;
+        console.log(
+          `[DEBUG] SUBWAY leg[${idx}] from:`,
+          fromName,
+          "to:",
+          toName,
+          leg
+        );
+        console.log(
+          `[DEBUG] typeof from:`,
+          typeof leg.from,
+          "typeof to:",
+          typeof leg.to,
+          "typeof start:",
+          typeof leg.start,
+          "typeof end:",
+          typeof leg.end
+        );
+        const fromNameStr = fromName
+          ? String(fromName).replace(/역$/, "")
+          : undefined;
+        const toNameStr = toName
+          ? String(toName).replace(/역$/, "")
+          : undefined;
         if (fromNameStr) subwayStations.push(fromNameStr);
         if (toNameStr) subwayStations.push(toNameStr);
       }
     });
-    console.log('[DEBUG] 추출된 subwayStations:', subwayStations);
+    console.log("[DEBUG] 추출된 subwayStations:", subwayStations);
     // 2. 시설 전체 받아오기
     const facilityTypes = mode === "wheel" ? [3] : [3, 4];
     const allFacilities = await getMarkersByTypes(facilityTypes);
-    console.log('[DEBUG] 받아온 시설 전체:', allFacilities);
+    console.log("[DEBUG] 받아온 시설 전체:", allFacilities);
     // 3. comment에 역 이름이 포함된 시설만 필터링
     const filteredFacilities = allFacilities.filter(
       (fac) =>
         fac.comment &&
         subwayStations.some((station) => fac.comment.includes(station))
     );
-    console.log('[DEBUG] 필터링된 시설:', filteredFacilities);
+    console.log("[DEBUG] 필터링된 시설:", filteredFacilities);
     // 4. 지도에 마커 표시 및 관리
     const newRouteFacilityMarkers = filteredFacilities.map((fac, idx) => {
       const lat = Number(fac.lat);
       const lng = Number(fac.lon);
       console.log(`[DEBUG] 마커 생성 lat/lng:`, lat, lng, fac);
+      // 아이콘 경로 분기: type 3 + weight 1이면 icon-ev-x.png, type 4 + weight 1이면 icon-es-x.png, 아니면 기존대로
+      const iconPath =
+        fac.type === 3 && fac.weight === 1
+          ? "/markers/icon-ev-x.png"
+          : fac.type === 4 && fac.weight === 1
+          ? "/markers/icon-es-x.png"
+          : FACILITY_TYPES.find((f) => f.type === fac.type)?.icon ||
+            "/markers/icon-pin.png";
       const marker = new window.Tmapv2.Marker({
         position: new window.Tmapv2.LatLng(lat, lng),
         map: mapInstanceRef.current,
         title: fac.name || fac.desc1,
-        icon:
-          window.location.origin +
-          (FACILITY_TYPES.find((f) => f.type === fac.type)?.icon ||
-            "/markers/icon-pin.png"),
+        icon: window.location.origin + iconPath,
         iconSize: new window.Tmapv2.Size(54, 54),
       });
       marker.addListener("click", () => {
@@ -412,7 +413,7 @@ export default function MapPage() {
       return marker;
     });
     setRouteFacilityMarkers(newRouteFacilityMarkers);
-    // ====== 안내문 요청 =====
+    // ====== 안내문 요청 (경로 선택 시에만 자연어 처리) =====
     try {
       const processData = {
         legs: route.data.legs,
@@ -420,11 +421,92 @@ export default function MapPage() {
         userType: mode,
         startName: start,
         endName: end,
+        beforeElevatorName: route.data.beforeElevatorName,
+        beforeElevatorExit: route.data.beforeElevatorExit,
+        afterElevatorName: route.data.afterElevatorName,
+        afterElevatorExit: route.data.afterElevatorExit,
       };
-      const processedResult = await processRouteInstructionsCached(processData);
-      setInstructions(processedResult.instructions || []);
+      console.log("[DEBUG] 자연어 처리 요청 데이터:", processData);
+      const processedResult = await processRouteInstructions(processData);
+      console.log("[DEBUG] 자연어 처리 결과:", processedResult);
+
+      // 맨 처음과 맨 끝의 불필요한 값 제거
+      let cleanInstructions = processedResult.instructions || [];
+      if (Array.isArray(cleanInstructions) && cleanInstructions.length > 0) {
+        // 빈 문자열이나 null 값 제거
+        cleanInstructions = cleanInstructions.filter(
+          (instruction) =>
+            instruction &&
+            typeof instruction === "string" &&
+            instruction.trim() !== ""
+        );
+
+        // 맨 처음과 맨 끝의 불필요한 값 제거 (JSON 파싱 관련 텍스트 등)
+        if (cleanInstructions.length > 0) {
+          const first = cleanInstructions[0].trim();
+          const last = cleanInstructions[cleanInstructions.length - 1].trim();
+
+          // 맨 처음이 JSON 관련 텍스트인 경우 제거
+          if (
+            first.startsWith("[") ||
+            first.startsWith("{") ||
+            first.includes("json") ||
+            first.includes("JSON")
+          ) {
+            cleanInstructions = cleanInstructions.slice(1);
+          }
+
+          // 맨 끝이 JSON 관련 텍스트인 경우 제거
+          if (cleanInstructions.length > 0) {
+            const lastAfterFirst =
+              cleanInstructions[cleanInstructions.length - 1].trim();
+            if (
+              lastAfterFirst.endsWith("]") ||
+              lastAfterFirst.endsWith("}") ||
+              lastAfterFirst.includes("json") ||
+              lastAfterFirst.includes("JSON")
+            ) {
+              cleanInstructions = cleanInstructions.slice(0, -1);
+            }
+          }
+        }
+
+        // 따옴표와 쉼표 제거
+        cleanInstructions = cleanInstructions.map((instruction) => {
+          if (typeof instruction === "string") {
+            return instruction
+              .replace(/^["']|["']$/g, "") // 앞뒤 따옴표 제거
+              .replace(/,$/, ""); // 끝에 쉼표 제거
+          }
+          return instruction;
+        });
+      }
+
+      console.log("[DEBUG] 정리된 안내문:", cleanInstructions);
+      setInstructions(cleanInstructions);
     } catch (e) {
-      setInstructions(["안내문 생성에 실패했습니다."]);
+      console.error("[DEBUG] 자연어 처리 실패:", e);
+      // 자연어 처리 실패 시 기본 안내문 생성
+      const fallbackInstructions = route.rawDescriptions.map((desc, idx) => {
+        if (desc.type === "WALK") {
+          return `${desc.description || "도보 이동"}${
+            desc.distance ? ` (${desc.distance}m)` : ""
+          }`;
+        } else if (desc.type === "BUS") {
+          return `버스 ${desc.name || ""} ${desc.from || ""}에서 탑승하여 ${
+            desc.to || ""
+          }에서 하차${desc.distance ? ` (${desc.distance}m)` : ""}`;
+        } else if (desc.type === "SUBWAY") {
+          return `지하철 ${desc.name || ""} ${desc.from || ""}에서 탑승하여 ${
+            desc.to || ""
+          }에서 하차${desc.distance ? ` (${desc.distance}m)` : ""}`;
+        } else {
+          return `${desc.type || "이동"} ${desc.name || ""} ${
+            desc.distance ? `(${desc.distance}m)` : ""
+          }`;
+        }
+      });
+      setInstructions(fallbackInstructions);
     } finally {
       setInstructionsLoading(false);
     }
@@ -464,7 +546,7 @@ export default function MapPage() {
             const center = new window.Tmapv2.LatLng(37.566481, 126.985023);
             mapInstanceRef.current = new window.Tmapv2.Map(mapRef.current, {
               center: center,
-              zoom: 16,
+              zoom: 15,
               width: "100%",
               height: "100%",
             });
@@ -695,14 +777,19 @@ export default function MapPage() {
         const facilityMarkersArr = markers.map((m) => {
           const lat = Number(m.lat);
           const lng = Number(m.lon);
+          // 아이콘 경로 분기: type 3 + weight 1이면 icon-ev-x.png, type 4 + weight 1이면 icon-es-x.png, 아니면 기존대로
+          const iconPath =
+            m.type === 3 && m.weight === 1
+              ? "/markers/icon-ev-x.png"
+              : m.type === 4 && m.weight === 1
+              ? "/markers/icon-es-x.png"
+              : FACILITY_TYPES.find((f) => f.type === m.type)?.icon ||
+                "/markers/icon-pin.png";
           const marker = new window.Tmapv2.Marker({
             position: new window.Tmapv2.LatLng(lat, lng),
             map: mapInstanceRef.current,
             title: m.name || m.desc1,
-            icon:
-              window.location.origin +
-              (FACILITY_TYPES.find((f) => f.type === m.type)?.icon ||
-                "/markers/icon-pin.png"),
+            icon: window.location.origin + iconPath,
             iconSize: new window.Tmapv2.Size(54, 54),
           });
           marker.addListener("click", () => {
@@ -782,6 +869,16 @@ export default function MapPage() {
   }, [showMarkerPanel]);
 
   const [showInquiryModal, setShowInquiryModal] = useState(false);
+
+  // 홈 버튼 클릭 핸들러
+  const handleHomeClick = () => {
+    const isAdmin = localStorage.getItem("isAdmin");
+    if (isAdmin === "1") {
+      navigate("/admin");
+    } else {
+      navigate("/main");
+    }
+  };
 
   if (error) {
     return (
@@ -928,7 +1025,9 @@ export default function MapPage() {
             <img src="/images/icon-report2.png" alt="신고" />
           </button>
           <button
-            className={`${styles.fixedBtn} ${isAutoLocating ? styles.fixedBtnActive : ""}`}
+            className={`${styles.fixedBtn} ${
+              isAutoLocating ? styles.fixedBtnActive : ""
+            }`}
             onClick={handleMoveToCurrentLocation}
           >
             <img src="/images/icon-location.png" alt="위치" />
@@ -1033,23 +1132,46 @@ export default function MapPage() {
             </ul>
           </div>
         </div>
-        {!showRoutePanel &&
-          routes[selectedRouteIdx]?.instructions?.length > 0 && (
-            <button
-              className={styles.routePanelShowBtn}
-              onClick={() => setShowRoutePanel(true)}
-            >
-              경로 안내 보기
-            </button>
-          )}
+        {!showRoutePanel && routes[selectedRouteIdx] && (
+          <button
+            className={styles.routePanelShowBtn}
+            style={{
+              position: "fixed",
+              left: "50%",
+              bottom: "80px",
+              transform: "translateX(-50%)",
+              zIndex: 1000,
+              minWidth: "120px",
+              minHeight: "40px",
+              background: "#fff",
+              border: "1px solid #ccc",
+              borderRadius: "20px",
+              boxShadow: "0 2px 8px rgba(0,0,0,0.08)",
+              fontSize: "1.1rem",
+              fontWeight: 500,
+              cursor: "pointer",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+            }}
+            onClick={() => setShowRoutePanel(true)}
+          >
+            경로 안내 보기
+          </button>
+        )}
       </div>
       <nav className={styles.bottomNav}>
         <Link to="/bookmark" className={styles.navItem}>
           <img src="/images/icon-star.png" alt="즐겨찾기" />
         </Link>
-        <Link to="/main" className={styles.navItem}>
+        <button
+          type="button"
+          className={styles.navItem}
+          onClick={handleHomeClick}
+          style={{ background: "none", border: "none", padding: 0 }}
+        >
           <img src="/images/icon-home.png" alt="홈" />
-        </Link>
+        </button>
         <Link to="/mypage" className={styles.navItem}>
           <img src="/images/icon-user.png" alt="내 정보" />
         </Link>
@@ -1071,29 +1193,102 @@ export default function MapPage() {
       )}
       {/* 시설 정보 모달 (임시) */}
       {showFacilityModal && (
-        <div style={{position:'fixed', left:0, top:0, width:'100vw', height:'100vh', background:'rgba(0,0,0,0.3)', zIndex:9999, display:'flex', alignItems:'center', justifyContent:'center'}}>
-          <div style={{background:'#fff', borderRadius:16, padding:32, minWidth:280, minHeight:120, position:'relative', display:'flex', flexDirection:'column', alignItems:'center', justifyContent:'center'}}>
-            <button style={{position:'absolute', right:12, top:12, fontSize:24, background:'none', border:'none', cursor:'pointer'}} onClick={()=>setShowFacilityModal(false)}>&times;</button>
-            <div style={{width:'100%', display:'flex', flexDirection:'column', alignItems:'center', justifyContent:'center'}}>
+        <div
+          style={{
+            position: "fixed",
+            left: 0,
+            top: 0,
+            width: "100vw",
+            height: "100vh",
+            background: "rgba(0,0,0,0.3)",
+            zIndex: 9999,
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+          }}
+        >
+          <div
+            style={{
+              background: "#fff",
+              borderRadius: 16,
+              padding: 32,
+              minWidth: 280,
+              minHeight: 120,
+              position: "relative",
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "center",
+              justifyContent: "center",
+            }}
+          >
+            <button
+              style={{
+                position: "absolute",
+                right: 12,
+                top: 12,
+                fontSize: 24,
+                background: "none",
+                border: "none",
+                cursor: "pointer",
+              }}
+              onClick={() => setShowFacilityModal(false)}
+            >
+              &times;
+            </button>
+            <div
+              style={{
+                width: "100%",
+                display: "flex",
+                flexDirection: "column",
+                alignItems: "center",
+                justifyContent: "center",
+              }}
+            >
               {selectedFacility ? (
                 <>
                   {selectedFacility.address && (
-                    <div style={{textAlign:'center'}}>{selectedFacility.address}</div>
-                  )}
-                  {selectedFacility.comment && (
-                    <div style={{textAlign:'center'}}>{selectedFacility.comment}</div>
-                  )}
-                  {selectedFacility.imageUrl && (
-                    <div style={{marginTop:8, display:'flex', justifyContent:'center'}}>
-                      <img src={selectedFacility.imageUrl} alt="시설 이미지" style={{maxWidth:200, maxHeight:200, borderRadius:8, display:'block', margin:'0 auto'}} />
+                    <div style={{ textAlign: "center" }}>
+                      {selectedFacility.address}
                     </div>
                   )}
-                  {!(selectedFacility.address || selectedFacility.comment || selectedFacility.imageUrl) && (
-                    <div style={{textAlign:'center'}}>추가 정보가 없습니다.</div>
+                  {selectedFacility.comment && (
+                    <div style={{ textAlign: "center" }}>
+                      {selectedFacility.comment}
+                    </div>
+                  )}
+                  {selectedFacility.imageUrl && (
+                    <div
+                      style={{
+                        marginTop: 8,
+                        display: "flex",
+                        justifyContent: "center",
+                      }}
+                    >
+                      <img
+                        src={selectedFacility.imageUrl}
+                        alt="시설 이미지"
+                        style={{
+                          maxWidth: 200,
+                          maxHeight: 200,
+                          borderRadius: 8,
+                          display: "block",
+                          margin: "0 auto",
+                        }}
+                      />
+                    </div>
+                  )}
+                  {!(
+                    selectedFacility.address ||
+                    selectedFacility.comment ||
+                    selectedFacility.imageUrl
+                  ) && (
+                    <div style={{ textAlign: "center" }}>
+                      추가 정보가 없습니다.
+                    </div>
                   )}
                 </>
               ) : (
-                <div style={{textAlign:'center'}}>정보 없음</div>
+                <div style={{ textAlign: "center" }}>정보 없음</div>
               )}
             </div>
           </div>

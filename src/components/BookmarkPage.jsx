@@ -96,6 +96,16 @@ export default function BookmarkPage() {
     }
   };
 
+  // 홈 버튼 클릭 핸들러
+  const handleHomeClick = () => {
+    const isAdmin = localStorage.getItem("isAdmin");
+    if (isAdmin === "1") {
+      navigate("/admin");
+    } else {
+      navigate("/main");
+    }
+  };
+
   return (
     <div className={styles.pageWrapper}>
       <header className={styles.headerBar}>
@@ -185,9 +195,14 @@ export default function BookmarkPage() {
         <Link to="/map" className={styles.navItem}>
           <img src="/images/icon-find.png" alt="지도" />
         </Link>
-        <Link to="/main" className={styles.navItem}>
+        <button
+          type="button"
+          className={styles.navItem}
+          onClick={handleHomeClick}
+          style={{ background: "none", border: "none", padding: 0 }}
+        >
           <img src="/images/icon-home.png" alt="홈" />
-        </Link>
+        </button>
         <Link to="/mypage" className={styles.navItem}>
           <img src="/images/icon-user.png" alt="내 정보" />
         </Link>
